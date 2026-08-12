@@ -45,7 +45,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,Email'],
-            'student_id' => ['required', 'string', 'max:50', 'unique:users,Student_ID'],
+            'student_id' => ['required', 'string', 'max:50', 'unique:users,Student_ID', 'regex:/^\d{4}-\d{4}-[A-Z]$/i'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'role' => ['nullable', 'string', 'in:Student,Faculty,Staff,Admin'],
             'council' => ['nullable', 'string', 'in:HBM,CSC,BIT,EDUC,Unaffiliated', 'required_if:role,Student,Faculty'],
@@ -67,7 +67,7 @@ class AuthController extends Controller
         if (Auth::check() && Auth::user()->Role === 'Admin') {
             $role = $request->input('role', 'Student');
             $verified = $request->has('as_admin');
-        } elseif (in_array($validated['student_id'], $approvedStudentIds)) {
+        } elseif (in_array(strtoupper($validated['student_id']), array_map('strtoupper', $approvedStudentIds))) {
             $verified = true;
             $role = 'Student';
         }
