@@ -23,6 +23,10 @@
         <input type="email" name="email" required value="{{ old('email') }}">
       </div>
       <div class="form-group">
+        <label>Student ID</label>
+        <input type="text" name="student_id" required value="{{ old('student_id') }}" placeholder="e.g. 2023-7317-M">
+      </div>
+      <div class="form-group">
         <label>Password</label>
         <input type="password" name="password" required minlength="6">
       </div>

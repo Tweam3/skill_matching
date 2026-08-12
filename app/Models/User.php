@@ -23,6 +23,7 @@ class User extends Authenticatable
         'Password_Hash',
         'Role',
         'Council',
+        'Student_ID',
         'Created_At',
         'Avg_Rating',
         'Total_Completed',
