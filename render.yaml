@@ -1,7 +1,7 @@
 services:
   - type: web
     name: skill-matching
-    env: php
+    runtime: php
     buildCommand: |
       composer install --no-interaction --no-progress
       php artisan key:generate --force
