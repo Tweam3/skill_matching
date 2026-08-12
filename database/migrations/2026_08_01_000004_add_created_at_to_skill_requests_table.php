@@ -10,7 +10,7 @@ return new class extends Migration
     {
         if (! Schema::hasColumn('skill_requests', 'Created_At')) {
             Schema::table('skill_requests', function (Blueprint $table) {
-                $table->timestamp('Created_At')->useCurrent()->after('Status');
+                $table->timestamp('Created_At')->useCurrent();
             });
         }
     }

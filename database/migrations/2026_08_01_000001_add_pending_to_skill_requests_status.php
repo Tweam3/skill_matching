@@ -14,7 +14,7 @@ return new class extends Migration
         }
 
         Schema::table('skill_requests', function (Blueprint $table) {
-            $table->enum('Status', ['Open', 'Assigned', 'Completed', 'Cancelled', 'Pending'])->default('Open')->change();
+            $table->string('Status', 20)->default('Open')->change();
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
         }
 
         Schema::table('skill_requests', function (Blueprint $table) {
-            $table->enum('Status', ['Open', 'Assigned', 'Completed', 'Cancelled'])->default('Open')->change();
+            $table->string('Status', 20)->default('Open')->change();
         });
     }
 };

@@ -13,7 +13,7 @@ return new class extends Migration
         }
 
         Schema::table('skill_requests', function (Blueprint $table) {
-            $table->string('Service_Mode', 20)->default('Remote')->after('Status');
+            $table->string('Service_Mode', 20)->default('Remote');
         });
     }
 

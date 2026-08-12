@@ -1,0 +1,7 @@
+web: >
+  bash -c "
+    touch /tmp/storage.log &&
+    tail -F /tmp/storage.log &
+    php-fpm -D &
+    nginx -g 'daemon off;'
+  "

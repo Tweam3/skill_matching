@@ -71,7 +71,7 @@ class AnalyticsService
         $results = DB::table('skills as s')
             ->join('skill_requests as r', 's.Skill_ID', '=', 'r.Skill_ID')
             ->join('request_assignments as a', 'r.Request_ID', '=', 'a.Request_ID')
-            ->selectRaw('s.Category, COUNT(*) as total, SUM(CASE WHEN a.Status = "Completed" THEN 1 ELSE 0 END) as completed')
+            ->selectRaw('s.Category, COUNT(*) as total, SUM(CASE WHEN a.Status = \'Completed\' THEN 1 ELSE 0 END) as completed')
             ->whereIn('a.Status', ['Completed', 'Failed'])
             ->groupBy('s.Category')
             ->orderBy('s.Category')
@@ -147,9 +147,11 @@ class AnalyticsService
     {
         $since = now()->subMonths($months)->startOfMonth();
         $driver = DB::connection()->getDriverName();
-        $monthExpr = $driver === 'sqlite'
-            ? "strftime('%Y-%m', {$column})"
-            : "DATE_FORMAT({$column}, '%Y-%m')";
+        $monthExpr = match ($driver) {
+            'sqlite' => "strftime('%Y-%m', {$column})",
+            'pgsql' => "to_char({$column}, 'YYYY-MM')",
+            default => "DATE_FORMAT({$column}, '%Y-%m')",
+        };
 
         $rawData = DB::table($table)
             ->selectRaw("{$monthExpr} as month, COUNT(*) as count")

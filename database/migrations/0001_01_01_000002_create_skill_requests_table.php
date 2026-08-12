@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('Skill_ID')->constrained('skills', 'Skill_ID');
             $table->string('Title');
             $table->text('Description')->nullable();
-            $table->enum('Status', ['Open', 'Assigned', 'Completed', 'Cancelled', 'Pending'])->default('Open');
+            $table->string('Status', 20)->default('Open');
         });
     }
 

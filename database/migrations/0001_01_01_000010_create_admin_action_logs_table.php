@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('admin_action_logs', function (Blueprint $table) {
             $table->id('Log_ID');
-            $table->unsignedInteger('Admin_ID');
+            $table->integer('Admin_ID');
             $table->string('Action');
             $table->text('Details')->nullable();
             $table->timestamp('Created_At')->useCurrent();

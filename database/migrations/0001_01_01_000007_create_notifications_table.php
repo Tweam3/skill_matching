@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('User_ID')->constrained('users', 'User_ID');
             $table->string('Notif_Type')->nullable();
             $table->text('Message')->nullable();
-            $table->enum('Status', ['Unread', 'Read'])->default('Unread');
+            $table->string('Status', 20)->default('Unread');
             $table->timestamp('Created_At')->useCurrent();
         });
     }

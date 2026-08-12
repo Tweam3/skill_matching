@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('Assignment_ID');
             $table->foreignId('Request_ID')->constrained('skill_requests', 'Request_ID');
             $table->foreignId('User_ID')->constrained('users', 'User_ID');
-            $table->enum('Status', ['Pending', 'Accepted', 'Rejected', 'Active', 'Completed', 'Failed'])->default('Pending');
+            $table->string('Status', 20)->default('Pending');
             $table->timestamp('Created_At')->useCurrent();
             $table->timestamp('Responded_At')->nullable();
             $table->timestamp('Status_Updated_At')->nullable();

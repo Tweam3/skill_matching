@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('Reported_User_ID')->constrained('users', 'User_ID');
             $table->foreignId('Request_ID')->nullable()->constrained('skill_requests', 'Request_ID');
             $table->text('Reason');
-            $table->enum('Status', ['Pending', 'Dismissed', 'Action_Taken'])->default('Pending');
+            $table->string('Status', 20)->default('Pending');
             $table->foreignId('Admin_ID')->nullable()->constrained('users', 'User_ID');
             $table->text('Admin_Note')->nullable();
             $table->timestamp('Created_At')->useCurrent();

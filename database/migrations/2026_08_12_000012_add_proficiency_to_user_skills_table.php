@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('user_skills', function (Blueprint $table) {
-            $table->unsignedTinyInteger('Proficiency')->nullable()->after('Skill_ID');
+            $table->tinyInteger('Proficiency')->nullable();
         });
     }
 

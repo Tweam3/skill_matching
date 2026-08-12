@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: skill-matching
+    env: php
+    buildCommand: |
+      composer install --no-interaction --no-progress
+      php artisan key:generate --force
+      php artisan migrate --force
+      npm install
+      npm run build
+    startCommand: >
+      bash -c "
+        touch /tmp/storage.log &&
+        tail -F /tmp/storage.log &
+        php-fpm -D &
+        nginx -g 'daemon off;'
+      "
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: skill-matching-db
+          property: host
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        fromDatabase:
+          name: skill-matching-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: skill-matching-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: skill-matching-db
+          property: password
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+
+databases:
+  - name: skill-matching-db
+    plan: free
+    databaseName: skill_matching_system
+    user: skill_matching_user

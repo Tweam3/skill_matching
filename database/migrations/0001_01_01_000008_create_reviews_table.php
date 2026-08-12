@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('Reviewed_User_ID')->constrained('users', 'User_ID');
             $table->foreignId('Reviewer_ID')->constrained('users', 'User_ID');
             $table->foreignId('Request_ID')->constrained('skill_requests', 'Request_ID');
-            $table->unsignedTinyInteger('Rating');
+            $table->tinyInteger('Rating');
             $table->text('Comment')->nullable();
             $table->timestamp('Created_At')->useCurrent();
         });

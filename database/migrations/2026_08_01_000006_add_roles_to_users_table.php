@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -11,7 +13,9 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN Role ENUM('Student', 'Faculty', 'Staff', 'Admin') NOT NULL DEFAULT 'Student'");
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('Role', 20)->default('Student')->change();
+        });
     }
 
     public function down(): void
@@ -20,6 +24,8 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN Role ENUM('Student', 'Admin') NOT NULL DEFAULT 'Student'");
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('Role', 20)->default('Student')->change();
+        });
     }
 };

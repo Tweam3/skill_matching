@@ -13,13 +13,13 @@ return new class extends Migration
             $table->string('Full_Name');
             $table->string('Email')->unique();
             $table->string('Password_Hash');
-            $table->enum('Role', ['Student', 'Faculty', 'Staff', 'Admin'])->default('Student');
+            $table->string('Role', 20)->default('Student');
             $table->timestamp('Created_At')->useCurrent();
             $table->decimal('Avg_Rating', 3, 2)->default(0.00);
-            $table->unsignedInteger('Total_Completed')->default(0);
+            $table->integer('Total_Completed')->default(0);
             $table->boolean('Is_Verified')->default(false);
-            $table->enum('Account_Status', ['Active', 'Warning', 'Suspended', 'Banned'])->default('Active');
-            $table->unsignedInteger('Warning_Count')->default(0);
+            $table->string('Account_Status', 20)->default('Active');
+            $table->integer('Warning_Count')->default(0);
             $table->text('Rejection_Reason')->nullable();
         });
     }
