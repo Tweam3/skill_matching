@@ -1,12 +1,8 @@
 services:
   - type: web
     name: skill-matching
-    runtime: php-8.3
-    buildCommand: |
-      composer install --no-interaction --no-progress
-      php artisan key:generate --force
-      php artisan migrate --force
-    startCommand: bash -c "touch /tmp/storage.log && tail -F /tmp/storage.log & php artisan serve --host 0.0.0.0 --port 10000"
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: APP_ENV
         value: production
