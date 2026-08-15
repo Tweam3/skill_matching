@@ -89,10 +89,11 @@ nav.navbar {
 .navbar-links {
   display:flex; gap:2px; align-items:center; overflow-x:auto;
   padding-bottom:4px; flex:1; justify-content:flex-end;
+  margin:0; padding-left:8px; list-style:none;
 }
 .navbar-links::-webkit-scrollbar { height:0; }
 .navbar-links::-webkit-scrollbar-thumb { background:rgba(0,33,71,0.2); border-radius:2px; }
-.navbar-links li { flex-shrink:0; }
+.navbar-links li { flex-shrink:0; margin:0; padding:0; }
 .navbar-links a, .navbar-links form button {
   padding:7px 10px; border-radius:8px; text-decoration:none; font-size:0.82rem;
   font-weight:500; color:var(--text); background:none; border:none; cursor:pointer;
