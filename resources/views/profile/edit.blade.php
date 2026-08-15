@@ -256,9 +256,31 @@ window.addEventListener('mouseup', () => {
 
 if (saveBtn) {
   saveBtn.addEventListener('click', () => {
-    if (!currentFile) return;
-    const form = document.getElementById('adjust-picture-form');
-    if (form) form.submit();
+    if (!currentFile || !previewImg) return;
+    const size = 400;
+    const ratio = size / 260;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      previewImg,
+      panX * ratio,
+      panY * ratio,
+      previewImg.naturalWidth * scale * ratio,
+      previewImg.naturalHeight * scale * ratio
+    );
+
+    canvas.toBlob((blob) => {
+      const input = document.getElementById('picture-input');
+      const dt = new DataTransfer();
+      dt.items.add(new File([blob], 'adjusted.png', { type: 'image/png' }));
+      input.files = dt.files;
+
+      const form = document.getElementById('adjust-picture-form');
+      form.submit();
+    }, 'image/png');
   });
 }
 
