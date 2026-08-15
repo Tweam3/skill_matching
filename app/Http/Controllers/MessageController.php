@@ -28,7 +28,7 @@ class MessageController extends Controller
         }
         $partners = Message::where('Sender_ID', $uid)
             ->orWhere('Receiver_ID', $uid)
-            ->selectRaw('DISTINCT CASE WHEN Sender_ID = ? THEN Receiver_ID ELSE Sender_ID END as User_ID', [$uid])
+            ->selectRaw('DISTINCT CASE WHEN "Sender_ID" = ? THEN "Receiver_ID" ELSE "Sender_ID" END as User_ID', [$uid])
             ->get()
             ->pluck('User_ID')
             ->toArray();

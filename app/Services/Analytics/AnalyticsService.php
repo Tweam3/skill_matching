@@ -147,15 +147,19 @@ class AnalyticsService
     {
         $since = now()->subMonths($months)->startOfMonth();
         $driver = DB::connection()->getDriverName();
+        $quotedColumn = match ($driver) {
+            'pgsql' => '"'.$column.'"',
+            default => $column,
+        };
         $monthExpr = match ($driver) {
-            'sqlite' => "strftime('%Y-%m', {$column})",
-            'pgsql' => "to_char({$column}, 'YYYY-MM')",
-            default => "DATE_FORMAT({$column}, '%Y-%m')",
+            'sqlite' => "strftime('%Y-%m', {$quotedColumn})",
+            'pgsql' => "to_char({$quotedColumn}, 'YYYY-MM')",
+            default => "DATE_FORMAT({$quotedColumn}, '%Y-%m')",
         };
 
         $rawData = DB::table($table)
             ->selectRaw("{$monthExpr} as month, COUNT(*) as count")
-            ->where($column, '>=', $since)
+            ->where($quotedColumn, '>=', $since)
             ->groupBy('month')
             ->pluck('count', 'month')
             ->toArray();
