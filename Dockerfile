@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ARG REBUILD=1
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -26,12 +26,13 @@ COPY . /var/www/html/
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers expires mime
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 755 /var/www/html/public
 
-COPY apache-laravel.conf /etc/apache2/sites-available/000-default.conf
+RUN printf '%s\n' 'ServerName skill-matching-eg0c.onrender.com' > /etc/apache2/conf-available/servername.conf
+RUN a2enconf servername
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
