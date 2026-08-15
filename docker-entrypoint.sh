@@ -10,4 +10,9 @@ php /var/www/html/artisan config:clear
 php /var/www/html/artisan route:clear
 php /var/www/html/artisan migrate --force
 
+echo "=== DEBUG: Checking public assets ==="
+ls -la /var/www/html/public/css/ || true
+ls -la /var/www/html/public/ | head -20 || true
+echo "=== END DEBUG ==="
+
 exec "$@"
