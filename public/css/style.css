@@ -630,6 +630,9 @@ a:hover { color:var(--primary-hover); }
   .card { word-wrap: break-word; overflow-wrap: break-word; }
   .card form { flex-wrap: wrap; }
   .card input, .card select, .card textarea, .card button { max-width: 100%; box-sizing: border-box; }
+  .tabs { flex-direction: column; border-bottom: none; gap: 8px; }
+  .tab { width: 100%; text-align: left; border-bottom: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; }
+  .tab.active { border-bottom-color: #e5e7eb; background: var(--blue-light); }
 }
 @media (min-width:641px) and (max-width:1024px) {
   .cards-grid { grid-template-columns: repeat(2, 1fr); }
@@ -664,8 +667,6 @@ a:hover { color:var(--primary-hover); }
   .navbar-links { flex-wrap:wrap; overflow-x:visible; }
   .navbar-links a, .navbar-links form button { padding:6px 8px; font-size:0.78rem; }
   .navbar-inner { height:auto; padding:8px 4px; }
-  .tabs { flex-wrap:wrap; }
-  .tab { flex:1; font-size:0.85rem; padding:8px 12px; }
 }
 
 .footer {
