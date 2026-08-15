@@ -104,6 +104,10 @@ nav.navbar {
   font-weight:800; font-size:1.1rem; color:var(--primary); text-decoration:none; white-space:nowrap;
 }
 .navbar-brand:hover { color:var(--primary); }
+.navbar-title { white-space:nowrap; }
+.navbar-toggle {
+  display:none; background:none; border:none; cursor:pointer; padding:4px; color:var(--primary);
+}
 .navbar-links {
   display:flex; gap:2px; align-items:center; overflow-x:auto;
   padding-bottom:4px; flex:1; justify-content:flex-end;
@@ -585,9 +589,20 @@ a:hover { color:var(--primary-hover); }
 }
 
 @media (max-width:640px) {
-  .category-grid {
-    grid-template-columns:1fr;
+  .navbar-inner { height:auto; padding:8px 0; flex-wrap:wrap; }
+  .navbar-toggle { display:block; }
+  .navbar-links {
+    display:none; width:100%; flex:0 0 100%; padding:0; margin:0;
+    flex-direction:column; align-items:stretch; overflow:visible;
+    border-top:1px solid #E5E7EB; margin-top:8px;
   }
+  .navbar-links.is-open { display:flex; }
+  .navbar-links li { margin:0; }
+  .navbar-links a, .navbar-links form button {
+    padding:10px 12px; border-radius:0; width:100%; text-align:left;
+    border-bottom:1px solid #f3f4f6;
+  }
+  .navbar-title { font-size:0.95rem; }
 }
 @media (min-width:641px) and (max-width:1024px) {
   .category-grid {
