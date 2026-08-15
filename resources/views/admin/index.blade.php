@@ -91,7 +91,7 @@
              <td>{{ $u->Total_Completed }}</td>
              <td><span class="badge badge-{{ strtolower($u->Account_Status) }}">{{ $u->Account_Status }}</span></td>
              <td>{{ !empty($u->Is_Verified) ? 'Yes' : 'No' }}</td>
-             <td style="display:flex;gap:6px;">
+              <td style="display:inline-flex;gap:6px;flex-wrap:wrap;">
                <a href="{{ route('profile.show', $u->User_ID) }}" class="btn btn-sm btn-secondary">Edit</a>
                <form method="post" action="{{ route('admin.users.delete') }}" style="display:inline;" onsubmit="return confirm('Delete this user?');">
                  @csrf

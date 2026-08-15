@@ -133,7 +133,7 @@ nav.navbar {
   text-transform:uppercase; letter-spacing:0.05em;
 }
 
-.container { flex:1; max-width:1200px; margin:0 auto; padding:24px; display:flex; flex-direction:column; }
+.container { flex:1; max-width:1200px; margin:0 auto; padding:24px; display:flex; flex-direction:column; width: 100%; }
 
 .hero-full-width {
   width: 100vw;
@@ -227,7 +227,7 @@ a:hover { color:var(--primary-hover); }
   color:var(--primary); border-bottom-color:var(--gold);
   background:var(--blue-light);
 }
-.tab-panel { min-width: 0; overflow: hidden; max-width: 100%; }
+.tab-panel { min-width: 0; overflow-x: auto; max-width: 100%; }
 
 .message-layout {
   display:grid;
