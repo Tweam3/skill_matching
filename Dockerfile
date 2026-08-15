@@ -1,7 +1,5 @@
 FROM php:8.2-apache
 
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -29,6 +27,9 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 RUN a2enmod rewrite
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+COPY apache-laravel.conf /etc/apache2/sites-available/laravel.conf
+RUN a2dissite 000-default && a2ensite laravel
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
