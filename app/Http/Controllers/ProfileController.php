@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserSkill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -35,11 +36,48 @@ class ProfileController extends Controller
         return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills'));
     }
 
+    public function edit($id = null)
+    {
+        $userId = $id ?? Auth::id();
+        $user = User::findOrFail($userId);
+
+        return view('profile.edit', compact('user'));
+    }
+
     public function update(Request $request, $id)
     {
         $userId = $id ?? Auth::id();
         $user = User::findOrFail($userId);
         $isAdmin = Auth::user() && Auth::user()->Role === 'Admin' && Auth::id() !== $userId;
+        $section = $request->input('section', 'name');
+
+        if ($section === 'password') {
+            $request->validate([
+                'current_password' => ['required', 'string'],
+                'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+            ]);
+
+            if (!Hash::check($request->input('current_password'), $user->Password_Hash)) {
+                return back()->with('error', 'Current password is incorrect.');
+            }
+
+            $user->Password_Hash = Hash::make($request->input('new_password'));
+            $user->save();
+
+            return redirect()->route('profile.show', $user->User_ID)->with('success', 'Password updated.');
+        }
+
+        if ($section === 'about') {
+            $request->validate([
+                'bio' => ['nullable', 'string', 'max:500'],
+            ]);
+
+            $user->Bio = $request->input('bio');
+            $user->save();
+
+            return redirect()->route('profile.show', $user->User_ID)->with('success', 'Bio updated.');
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,Email,'.$user->User_ID.',User_ID'],
@@ -47,6 +85,7 @@ class ProfileController extends Controller
             'council' => ['nullable', 'string', 'in:HBM,CSC,BIT,EDUC,Unaffiliated'],
             'profile_picture' => ['nullable', 'image', 'max:2048'],
         ]);
+
         $user->Full_Name = $request->input('name');
         $user->Email = $request->input('email');
         if ($isAdmin) {

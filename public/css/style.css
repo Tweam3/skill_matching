@@ -713,6 +713,18 @@ a:hover { color:var(--primary-hover); }
 .profile-badges { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
 .profile-section { margin-top:20px; }
 .profile-section h3 { margin:0 0 12px; font-size:1.05rem; color:var(--primary); }
+.settings-grid { display:grid; grid-template-columns: 1fr 2fr; gap:20px; }
+.settings-sidebar .card { padding:16px; }
+.settings-sidebar-item {
+  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; cursor:pointer;
+  color:var(--text); text-decoration:none; font-weight:500; margin-bottom:6px;
+}
+.settings-sidebar-item:hover, .settings-sidebar-item.active { background:var(--blue-light); color:var(--primary); }
+.settings-sidebar-item svg { width:18px; height:18px; flex-shrink:0; }
+.settings-section textarea { width:100%; padding:10px 12px; border:2px solid #E5E7EB; border-radius:8px; font-size:0.95rem; resize:vertical; }
+.settings-section textarea:focus { outline:none; border-color:var(--primary); }
+.settings-section { margin-bottom:20px; }
+.settings-section h3 { margin:0 0 12px; font-size:1.05rem; color:var(--primary); }
 .skills-chips { display:flex; flex-wrap:wrap; gap:8px; }
 .skills-chips span {
   display:inline-flex; align-items:center; gap:6px; background:var(--blue-light); color:var(--primary);

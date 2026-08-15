@@ -29,48 +29,11 @@
       </div>
       <div style="flex-shrink:0;">
         @if (auth()->user()->User_ID === $user->User_ID || auth()->user()->Role === 'Admin')
-          <button class="btn btn-primary btn-sm" onclick="toggleEditForm()">Edit Profile</button>
+          <a href="{{ route('profile.edit', $user->User_ID) }}" class="btn btn-primary btn-sm">Edit Profile</a>
         @endif
       </div>
+      </div>
     </div>
-
-    @if (auth()->user()->User_ID === $user->User_ID || auth()->user()->Role === 'Admin')
-    <div id="edit-form" style="display:none; margin-top:18px; padding-top:18px; border-top:1px solid #e5e7eb;">
-      <form method="POST" action="{{ route('profile.update', $user->User_ID) }}" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:10px;">
-        @csrf
-        <input type="text" name="name" value="{{ $user->Full_Name }}" placeholder="Full Name" required>
-        <input type="email" name="email" value="{{ $user->Email }}" placeholder="Email" required>
-        <label style="font-size:0.875rem; font-weight:600;">Profile Picture</label>
-        <input type="file" name="profile_picture" accept="image/*">
-        @if ($user->Profile_Picture)
-          <label style="display:flex; align-items:center; gap:8px; font-size:0.875rem;">
-            <input type="checkbox" name="remove_profile_picture" value="1">
-            Remove current picture
-          </label>
-        @endif
-        @if (auth()->user()->Role === 'Admin' && auth()->user()->User_ID !== $user->User_ID)
-          <select name="role" style="padding:8px;border-radius:6px;border:1px solid #E5E7EB;">
-            <option value="Student" {{ $user->Role === 'Student' ? 'selected' : '' }}>Student</option>
-            <option value="Faculty" {{ $user->Role === 'Faculty' ? 'selected' : '' }}>Faculty</option>
-            <option value="Staff" {{ $user->Role === 'Staff' ? 'selected' : '' }}>Staff</option>
-            <option value="Admin" {{ $user->Role === 'Admin' ? 'selected' : '' }}>Admin</option>
-          </select>
-          <select name="council" style="padding:8px;border-radius:6px;border:1px solid #E5E7EB;">
-            <option value="" {{ !$user->Council ? 'selected' : '' }}>None</option>
-            <option value="HBM" {{ $user->Council === 'HBM' ? 'selected' : '' }}>HBM</option>
-            <option value="CSC" {{ $user->Council === 'CSC' ? 'selected' : '' }}>CSC</option>
-            <option value="BIT" {{ $user->Council === 'BIT' ? 'selected' : '' }}>BIT</option>
-            <option value="EDUC" {{ $user->Council === 'EDUC' ? 'selected' : '' }}>EDUC</option>
-            <option value="Unaffiliated" {{ $user->Council === 'Unaffiliated' ? 'selected' : '' }}>Unaffiliated</option>
-          </select>
-        @endif
-        <div style="display:flex; gap:8px;">
-          <button type="submit" class="btn btn-success btn-sm">Save Changes</button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditForm()">Cancel</button>
-        </div>
-      </form>
-    </div>
-    @endif
   </div>
 
   <div class="card" style="margin-bottom:20px;">
