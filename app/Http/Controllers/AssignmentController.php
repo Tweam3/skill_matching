@@ -38,6 +38,7 @@ class AssignmentController extends Controller
                 'User_ID' => $owner,
                 'Notif_Type' => 'Assignment',
                 'Message' => Auth::user()->Full_Name.' applied for your request: '.$req->Title,
+                'url' => route('requests.show', $req->Request_ID),
             ]);
         }
 
@@ -78,12 +79,14 @@ class AssignmentController extends Controller
                     'User_ID' => $other->User_ID,
                     'Notif_Type' => 'Assignment',
                     'Message' => 'The request "'.$req->Title.'" was assigned to another applicant.',
+                    'url' => route('matches.index'),
                 ]);
             });
         Notification::create([
             'User_ID' => $assignment->User_ID,
             'Notif_Type' => 'Assignment',
             'Message' => 'Your application for "'.$req->Title.'" has been accepted!',
+            'url' => route('requests.show', $req->Request_ID),
         ]);
 
         return back()->with('success', 'Applicant accepted. Other applicants have been notified.');
@@ -106,6 +109,7 @@ class AssignmentController extends Controller
             'User_ID' => $assignment->User_ID,
             'Notif_Type' => 'Assignment',
             'Message' => 'Your application for "'.$req->Title.'" was not accepted.',
+            'url' => route('matches.index'),
         ]);
 
         return back()->with('success', 'Applicant rejected.');

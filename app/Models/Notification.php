@@ -13,7 +13,7 @@ class Notification extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['User_ID', 'Notif_Type', 'Message', 'Status', 'Created_At'];
+    protected $fillable = ['User_ID', 'Notif_Type', 'Message', 'Status', 'Created_At', 'url'];
 
     protected $casts = [
         'Created_At' => 'datetime',

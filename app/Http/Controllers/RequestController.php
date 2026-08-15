@@ -82,6 +82,7 @@ class RequestController extends Controller
                     'User_ID' => $provider->User_ID,
                     'Notif_Type' => 'Match',
                     'Message' => 'New request: '.$requestModel->Title,
+                    'url' => route('requests.show', $requestId),
                 ]);
             }
 

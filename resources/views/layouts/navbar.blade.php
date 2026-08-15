@@ -9,7 +9,7 @@
       <li><a href="{{ route('matches.index') }}">Matches</a></li>
       <li><a href="{{ route('search.index') }}">Search</a></li>
       <li><a href="{{ route('messages.index') }}">Messages</a></li>
-      <li><a href="{{ route('notifications.index') }}">Notifications</a></li>
+      <li><a href="{{ route('notifications.index') }}">Notifications @if($unreadCount = auth()->user()->notifications()->where('Status', 'Unread')->count())<span class="badge badge-open" style="margin-left:6px;">{{ $unreadCount }}</span>@endif</a></li>
       @if (auth()->user()->Role === 'Admin')
         <li><a href="{{ route('admin.index') }}">Admin Panel</a></li>
         <li><a href="{{ route('admin.analytics') }}">Analytics</a></li>

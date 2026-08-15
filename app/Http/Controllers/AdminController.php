@@ -101,6 +101,7 @@ class AdminController extends Controller
                 'User_ID' => $uid,
                 'Notif_Type' => 'Verification',
                 'Message' => 'Your account has been approved.',
+                'url' => route('dashboard'),
             ]);
             $this->logAction('verify_user', 'Approved user ID: '.$uid);
         } else {
@@ -110,6 +111,7 @@ class AdminController extends Controller
                 'User_ID' => $uid,
                 'Notif_Type' => 'Verification',
                 'Message' => 'Your account was not approved.',
+                'url' => route('dashboard'),
             ]);
             $this->logAction('verify_user', 'Rejected user ID: '.$uid.' - Reason: '.$reason);
         }
@@ -133,6 +135,7 @@ class AdminController extends Controller
                 'User_ID' => $reporterId,
                 'Notif_Type' => 'Report',
                 'Message' => 'Your report has been reviewed and dismissed.',
+                'url' => route('dashboard'),
             ]);
             $this->logAction('resolve_report', 'Dismissed report ID: '.$request->report_id);
         } else {
@@ -141,15 +144,17 @@ class AdminController extends Controller
                 $result = app(ModerationService::class)->escalateViolation($user);
 
                 $report->update(['Status' => 'Action_Taken', 'Admin_ID' => $adminId]);
-                Notification::create([
-                    'User_ID' => $reporterId,
-                    'Notif_Type' => 'Report',
-                    'Message' => 'Action taken on your report. Reported user has been '.$result['status'].'.',
-                ]);
+                    Notification::create([
+                        'User_ID' => $reporterId,
+                        'Notif_Type' => 'Report',
+                        'Message' => 'Action taken on your report. Reported user has been '.$result['status'].'.',
+                        'url' => route('dashboard'),
+                    ]);
                 Notification::create([
                     'User_ID' => $reportedId,
                     'Notif_Type' => 'Penalty',
                     'Message' => $result['message'],
+                    'url' => route('dashboard'),
                 ]);
                 $this->logAction('resolve_report', 'Escalated report ID: '.$request->report_id.' — Penalty level '.$result['level'].' ('.$result['status'].'), Warning_Count now: '.$user->Warning_Count);
             });
