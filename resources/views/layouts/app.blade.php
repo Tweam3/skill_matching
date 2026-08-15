@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+  <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
   <title>{{ $pageTitle ?? 'Skill Matching System — ISAT-U' }}</title>
   <meta name="description" content="Campus-based peer-to-peer skill exchange platform. Request help, offer mentorship, and connect with verified students at ISAT-U.">
   <link rel="canonical" href="{{ url()->current() }}">
