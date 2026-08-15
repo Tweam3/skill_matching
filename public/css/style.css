@@ -133,7 +133,7 @@ nav.navbar {
   text-transform:uppercase; letter-spacing:0.05em;
 }
 
-.container { flex:1; max-width:1200px; margin:0 auto; padding:24px; display:flex; flex-direction:column; }
+.container { flex:1; max-width:1200px; margin:0 auto; padding:24px; display:flex; flex-direction:column; overflow-x: hidden; }
 
 .hero-full-width {
   width: 100vw;
@@ -160,6 +160,7 @@ nav.navbar {
   border:1px solid #E5E7EB; transition:box-shadow 0.2s;
 }
 .cards-grid .card form { margin-top:auto; }
+.card { min-width: 0; }
 .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
 .card-title { font-weight:600; font-size:1.05rem; margin:0 0 4px; }
 .card-subtitle { color:var(--muted); font-size:0.85rem; margin:0 0 8px; }
@@ -184,8 +185,8 @@ nav.navbar {
 .badge-staff { background:#CCFBF1; color:#0F7490; }
 .badge-student { background:var(--blue-light); color:var(--primary); }
 
-.table-wrap { overflow-x:auto; background:var(--surface); border-radius:12px; border:1px solid #E5E7EB; margin-top:20px; }
-table { width:100%; border-collapse:collapse; }
+.table-wrap { overflow-x:auto; background:var(--surface); border-radius:12px; border:1px solid #E5E7EB; margin-top:20px; min-width: 0; }
+table { width:100%; border-collapse:collapse; min-width: 0; }
 th, td { padding:12px 16px; text-align:left; font-size:0.95rem; border-bottom:1px solid #E5E7EB; }
 th { background:var(--primary); font-weight:600; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.05em; color:#fff; }
 tbody tr:hover { background:#F9FAFB; }
@@ -226,6 +227,7 @@ a:hover { color:var(--primary-hover); }
   color:var(--primary); border-bottom-color:var(--gold);
   background:var(--blue-light);
 }
+.tab-panel { min-width: 0; overflow: hidden; max-width: 100%; }
 
 .message-layout {
   display:grid;
@@ -640,8 +642,9 @@ a:hover { color:var(--primary-hover); }
     border-radius: 6px;
     background: var(--blue-light);
   }
-  .admin-register-form { flex-direction: column; align-items: stretch; }
-  .admin-register-form > div { width: 100%; }
+.admin-register-form { flex-direction: column; align-items: stretch; }
+.admin-register-form > div { width: 100%; }
+.admin-register-form input, .admin-register-form select, .admin-register-form button { width: 100%; box-sizing: border-box; }
 }
 @media (min-width:641px) and (max-width:1024px) {
   .cards-grid { grid-template-columns: repeat(2, 1fr); }

@@ -45,38 +45,38 @@
    <div id="tab-users" class="tab-panel">
      <h3>All Users</h3>
       <div class="card" style="margin-bottom:16px;">
-        <form method="post" action="{{ route('admin.users.register') }}" class="admin-register-form" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
-         @csrf
-         <div style="display:flex;flex-direction:column;gap:4px;">
-           <input type="text" name="name" placeholder="Full Name" required>
-         </div>
-         <div style="display:flex;flex-direction:column;gap:4px;">
-           <input type="email" name="email" placeholder="Email" required>
-         </div>
-         <div style="display:flex;flex-direction:column;gap:4px;">
-           <input type="text" name="password" placeholder="Password" required>
-         </div>
-          <div style="display:flex;flex-direction:column;gap:4px;">
-            <select name="role" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
-              <option value="Student">Student</option>
-              <option value="Faculty">Faculty</option>
-              <option value="Staff">Staff</option>
-              <option value="Admin">Admin</option>
-            </select>
+        <form method="post" action="{{ route('admin.users.register') }}" class="admin-register-form">
+          @csrf
+          <div>
+            <input type="text" name="name" placeholder="Full Name" required>
           </div>
-          <div style="display:flex;flex-direction:column;gap:4px;">
-            <select name="council" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
-              <option value="">Council</option>
-              <option value="HBM">HBM</option>
-              <option value="CSC">CSC</option>
-              <option value="BIT">BIT</option>
-              <option value="EDUC">EDUC</option>
-              <option value="Unaffiliated">Unaffiliated</option>
-            </select>
+          <div>
+            <input type="email" name="email" placeholder="Email" required>
           </div>
-         <button type="submit" class="btn btn-primary btn-sm">Register</button>
-       </form>
-     </div>
+          <div>
+            <input type="text" name="password" placeholder="Password" required>
+          </div>
+           <div>
+             <select name="role" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
+               <option value="Student">Student</option>
+               <option value="Faculty">Faculty</option>
+               <option value="Staff">Staff</option>
+               <option value="Admin">Admin</option>
+             </select>
+           </div>
+           <div>
+             <select name="council" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
+               <option value="">Council</option>
+               <option value="HBM">HBM</option>
+               <option value="CSC">CSC</option>
+               <option value="BIT">BIT</option>
+               <option value="EDUC">EDUC</option>
+               <option value="Unaffiliated">Unaffiliated</option>
+             </select>
+           </div>
+          <button type="submit" class="btn btn-primary btn-sm">Register</button>
+        </form>
+      </div>
      <div class="table-wrap"><table>
        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Council</th><th>Rating</th><th>Completed</th><th>Status</th><th>Verified</th><th>Actions</th></tr></thead>
        <tbody>
