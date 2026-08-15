@@ -124,6 +124,15 @@ nav.navbar {
 
 .container { flex:1; max-width:1200px; margin:0 auto; padding:24px; display:flex; flex-direction:column; }
 
+.hero-full-width {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
 .cards-grid {
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

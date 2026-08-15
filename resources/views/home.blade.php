@@ -2,7 +2,7 @@
 
 @section('content')
 @guest
-  <div style="background:linear-gradient(135deg, #002147 0%, #0a2d6e 100%); color:#fff; padding:80px 20px; text-align:center;">
+  <div class="hero-full-width" style="background:linear-gradient(135deg, #002147 0%, #0a2d6e 100%); color:#fff; padding:80px 20px; text-align:center;">
     <div style="max-width:800px; margin:0 auto;">
       <div style="margin-bottom:20px;">
         <span class="university-badge" style="background:rgba(255,255,255,0.15); color:#FFC72C; padding:8px 18px; border-radius:999px; font-weight:700; letter-spacing:0.04em;">ISAT-U</span>
