@@ -16,5 +16,6 @@ php /var/www/html/artisan key:generate --force
 php /var/www/html/artisan config:clear
 php /var/www/html/artisan route:clear
 php /var/www/html/artisan migrate --force
+php /var/www/html/artisan db:seed --force
 
 exec "$@"
