@@ -21,7 +21,7 @@
   <div style="max-width:1100px; margin:0 auto; padding:60px 20px;">
     <h2 style="text-align:center; margin-bottom:8px; color:var(--primary);">How it works</h2>
     <p style="text-align:center; color:var(--muted); margin-bottom:36px;">Three simple steps to get help or share your skills.</p>
-    <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:20px;">
+    <div class="cards-grid how-it-works-grid">
       <div class="card" style="text-align:center; padding:28px;">
         <div style="font-size:2rem; margin-bottom:12px;">📝</div>
         <div class="card-title">Post a request</div>
