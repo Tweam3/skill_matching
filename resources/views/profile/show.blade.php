@@ -11,6 +11,12 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
     <div class="card">
       <h3 style="margin-top:0">User Info</h3>
+      <div style="text-align:center; margin-bottom:16px;">
+        @php
+          $pic = $user->Profile_Picture ? asset('storage/'.$user->Profile_Picture) : asset('images/default-avatar.svg');
+        @endphp
+        <img src="{{ $pic }}" alt="Profile picture" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--primary); background:var(--bg);">
+      </div>
       <p><strong>Name:</strong> {{ $user->Full_Name }}</p>
       <p><strong>Email:</strong> {{ $user->Email }}</p>
        <p><strong>Role:</strong> {{ $user->Role }}</p>
@@ -23,10 +29,18 @@
           <button class="btn btn-primary btn-sm" onclick="toggleEditForm()">Edit Profile</button>
         </div>
         <div id="edit-form" style="display:none;margin-top:16px;">
-         <form method="POST" action="{{ route('profile.update', $user->User_ID) }}" style="display:flex;flex-direction:column;gap:8px;">
+         <form method="POST" action="{{ route('profile.update', $user->User_ID) }}" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:8px;">
            @csrf
            <input type="text" name="name" value="{{ $user->Full_Name }}" placeholder="Full Name" required>
            <input type="email" name="email" value="{{ $user->Email }}" placeholder="Email" required>
+           <label style="font-size:0.875rem; font-weight:600;">Profile Picture</label>
+           <input type="file" name="profile_picture" accept="image/*">
+           @if ($user->Profile_Picture)
+             <label style="display:flex; align-items:center; gap:8px; font-size:0.875rem;">
+               <input type="checkbox" name="remove_profile_picture" value="1">
+               Remove current picture
+             </label>
+           @endif
            @if (auth()->user()->Role === 'Admin' && auth()->user()->User_ID !== $user->User_ID)
            <select name="role" style="padding:8px;border-radius:6px;border:1px solid #E5E7EB;">
              <option value="Student" {{ $user->Role === 'Student' ? 'selected' : '' }}>Student</option>
@@ -46,19 +60,19 @@
            <button type="submit" class="btn btn-success btn-sm">Save Changes</button>
            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditForm()">Cancel</button>
          </form>
-       </div>
-       @endif
-        @if (auth()->user()->User_ID !== $user->User_ID)
-        <div style="margin-top:16px;">
-          <button class="btn btn-danger btn-sm" onclick="openReportModal({{ $user->User_ID }})" title="Report User" style="padding:8px 10px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-          </button>
         </div>
         @endif
+         @if (auth()->user()->User_ID !== $user->User_ID)
+         <div style="margin-top:16px;">
+           <button class="btn btn-danger btn-sm" onclick="openReportModal({{ $user->User_ID }})" title="Report User" style="padding:8px 10px;">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+               <line x1="12" y1="9" x2="12" y2="13"></line>
+               <line x1="12" y1="17" x2="12.01" y2="17"></line>
+             </svg>
+           </button>
+         </div>
+         @endif
     </div>
     <div class="card">
       <h3 style="margin-top:0">Skills</h3>

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'Role',
         'Council',
         'Student_ID',
+        'Profile_Picture',
         'Created_At',
         'Avg_Rating',
         'Total_Completed',

@@ -45,6 +45,7 @@ class ProfileController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,Email,'.$user->User_ID.',User_ID'],
             'role' => [$isAdmin ? 'required' : 'nullable', 'in:Student,Faculty,Staff,Admin'],
             'council' => ['nullable', 'string', 'in:HBM,CSC,BIT,EDUC,Unaffiliated'],
+            'profile_picture' => ['nullable', 'image', 'max:2048'],
         ]);
         $user->Full_Name = $request->input('name');
         $user->Email = $request->input('email');
@@ -56,9 +57,26 @@ class ProfileController extends Controller
             $user->Council = $council;
             $this->logAction('update_role', "User ID {$user->User_ID}: role and council updated by admin");
         }
+        if ($request->has('remove_profile_picture')) {
+            $this->deleteProfilePicture($user);
+            $user->Profile_Picture = null;
+        } elseif ($request->hasFile('profile_picture')) {
+            $this->deleteProfilePicture($user);
+            $file = $request->file('profile_picture');
+            $filename = 'user_'.$user->User_ID.'_'.time().'.'.$file->getClientOriginalExtension();
+            $path = $file->storeAs('profile-pictures', $filename, 'public');
+            $user->Profile_Picture = $path;
+        }
         $user->save();
 
         return redirect()->route('profile.show', $user->User_ID)->with('success', 'Profile updated.');
+    }
+
+    protected function deleteProfilePicture(User $user): void
+    {
+        if ($user->Profile_Picture) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->Profile_Picture);
+        }
     }
 
     public function addSkill(Request $request)
