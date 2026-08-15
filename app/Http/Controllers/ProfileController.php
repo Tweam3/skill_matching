@@ -53,38 +53,14 @@ class ProfileController extends Controller
         $userId = $id ?? Auth::id();
         $user = User::findOrFail($userId);
 
-        $file = $request->file('profile_picture');
-        $image = imagecreatefromstring(file_get_contents($file->getRealPath()));
-        if (!$image) {
-            return back()->with('error', 'Invalid image file.');
+        if ($request->hasFile('profile_picture')) {
+            $this->deleteProfilePicture($user);
+            $file = $request->file('profile_picture');
+            $filename = 'user_'.$userId.'_'.time().'.'.$file->getClientOriginalExtension();
+            $path = $file->storeAs('profile-pictures', $filename, 'public');
+            $user->Profile_Picture = $path;
+            $user->save();
         }
-
-        $size = 400;
-        $canvas = imagecreatetruecolor($size, $size);
-        imagealphablending($canvas, false);
-        imagesavealpha($canvas, true);
-        $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
-        imagefilledrectangle($canvas, 0, 0, $size, $size, $transparent);
-
-        $srcW = imagesx($image);
-        $srcH = imagesy($image);
-        $scale = max($size / $srcW, $size / $srcH);
-        $dstW = (int)($srcW * $scale);
-        $dstH = (int)($srcH * $scale);
-        $dstX = (int)(($size - $dstW) / 2);
-        $dstY = (int)(($size - $dstH) / 2);
-
-        imagecopyresampled($canvas, $image, $dstX, $dstY, 0, 0, $dstW, $dstH, $srcW, $srcH);
-
-        $filename = 'user_'.$userId.'_'.time().'.png';
-        $path = storage_path('app/public/profile-pictures/'.$filename);
-        imagepng($canvas, $path);
-        imagedestroy($image);
-        imagedestroy($canvas);
-
-        $this->deleteProfilePicture($user);
-        $user->Profile_Picture = 'profile-pictures/'.$filename;
-        $user->save();
 
         return redirect()->route('profile.show', $user->User_ID)->with('success', 'Profile picture updated.');
     }

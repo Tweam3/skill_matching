@@ -44,8 +44,8 @@
         </form>
 
         <div id="picture-preview-area" style="display:none; margin-top:16px;">
-          <div style="position:relative; width:260px; height:260px; overflow:hidden; border-radius:50%; border:3px solid var(--primary); margin:0 auto; background:#f3f4f6;">
-            <img id="preview-img" src="" alt="Preview" style="position:absolute; left:0; top:0; transform-origin:0 0; cursor:grab; user-select:none;">
+          <div style="position:relative; width:260px; height:260px; overflow:hidden; border-radius:50%; border:3px solid var(--primary); margin:0 auto; background:#f3f4f6; cursor:grab;">
+            <img id="preview-img" src="" alt="Preview" style="position:absolute; left:0; top:0; transform-origin:0 0; user-select:none; pointer-events:none;">
           </div>
           <div style="margin-top:16px; display:flex; flex-direction:column; gap:10px; align-items:center;">
             <label style="font-size:0.875rem; font-weight:600;">Zoom</label>
@@ -156,6 +156,24 @@ const previewImg = document.getElementById('preview-img');
 const zoomRange = document.getElementById('zoom-range');
 const saveBtn = document.getElementById('save-picture-btn');
 const cancelBtn = document.getElementById('cancel-picture-btn');
+const previewBox = previewImg ? previewImg.parentElement : null;
+
+function updateTransform() {
+  if (!previewImg) return;
+  previewImg.style.width = previewImg.naturalWidth + 'px';
+  previewImg.style.height = previewImg.naturalHeight + 'px';
+  previewImg.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+}
+
+function clampPan() {
+  if (!previewImg || !previewBox) return;
+  const w = previewImg.naturalWidth * scale;
+  const h = previewImg.naturalHeight * scale;
+  const boxW = previewBox.clientWidth;
+  const boxH = previewBox.clientHeight;
+  panX = Math.min(0, Math.max(panX, boxW - w));
+  panY = Math.min(0, Math.max(panY, boxH - h));
+}
 
 if (fileInput) {
   fileInput.addEventListener('change', (e) => {
@@ -166,103 +184,92 @@ if (fileInput) {
     reader.onload = (ev) => {
       previewImg.src = ev.target.result;
       previewArea.style.display = 'block';
-      scale = 1;
-      panX = 0;
-      panY = 0;
-      zoomRange.value = 1;
-      previewImg.onload = fitPreview;
+      previewImg.onload = () => {
+        scale = 1;
+        panX = 0;
+        panY = 0;
+        zoomRange.value = 1;
+        fitPreview();
+      };
     };
     reader.readAsDataURL(file);
   });
 }
 
 function fitPreview() {
-  const box = previewImg.parentElement;
-  const img = previewImg;
-  const naturalW = img.naturalWidth;
-  const naturalH = img.naturalHeight;
-  if (!naturalW || !naturalH) return;
-  const boxW = box.clientWidth;
-  const boxH = box.clientHeight;
+  if (!previewImg || !previewBox) return;
+  const boxW = previewBox.clientWidth;
+  const boxH = previewBox.clientHeight;
+  const naturalW = previewImg.naturalWidth;
+  const naturalH = previewImg.naturalHeight;
   const baseScale = Math.max(boxW / naturalW, boxH / naturalH);
-  scale = Math.max(1, parseFloat(zoomRange.value) * baseScale);
-  const drawW = naturalW * scale;
-  const drawH = naturalH * scale;
-  panX = (boxW - drawW) / 2;
-  panY = (boxH - drawH) / 2;
+  scale = baseScale;
+  panX = (boxW - naturalW * scale) / 2;
+  panY = (boxH - naturalH * scale) / 2;
+  zoomRange.min = 0.5;
+  zoomRange.max = 3;
+  zoomRange.step = 0.05;
+  zoomRange.value = 1;
   updateTransform();
-}
-
-function updateTransform() {
-  previewImg.style.width = previewImg.naturalWidth * scale + 'px';
-  previewImg.style.height = previewImg.naturalHeight * scale + 'px';
-  previewImg.style.left = panX + 'px';
-  previewImg.style.top = panY + 'px';
 }
 
 if (zoomRange) {
   zoomRange.addEventListener('input', () => {
-    const box = previewImg.parentElement;
-    const rect = previewImg.getBoundingClientRect();
-    const centerX = box.clientWidth / 2;
-    const centerY = box.clientHeight / 2;
-    const oldScale = scale;
-    const baseScale = Math.max(box.clientWidth / previewImg.naturalWidth, box.clientHeight / previewImg.naturalHeight);
-    scale = Math.max(1, parseFloat(zoomRange.value) * baseScale);
-    panX = centerX - (centerX - panX) * (scale / oldScale);
-    panY = centerY - (centerY - panY) * (scale / oldScale);
+    if (!previewImg || !previewBox) return;
+    const boxW = previewBox.clientWidth;
+    const boxH = previewBox.clientHeight;
+    const naturalW = previewImg.naturalWidth;
+    const naturalH = previewImg.naturalHeight;
+    const baseScale = Math.max(boxW / naturalW, boxH / naturalH);
+    const newScale = parseFloat(zoomRange.value) * baseScale;
+    const centerX = boxW / 2;
+    const centerY = boxH / 2;
+    panX = centerX - (centerX - panX) * (newScale / scale);
+    panY = centerY - (centerY - panY) * (newScale / scale);
+    scale = newScale;
+    clampPan();
     updateTransform();
   });
 }
 
-previewImg.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  startX = e.clientX - panX;
-  startY = e.clientY - panY;
-});
+if (previewBox) {
+  previewBox.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+    previewBox.style.cursor = 'grabbing';
+  });
+}
+
 window.addEventListener('mousemove', (e) => {
   if (!isDragging) return;
   panX = e.clientX - startX;
   panY = e.clientY - startY;
+  clampPan();
   updateTransform();
 });
-window.addEventListener('mouseup', () => { isDragging = false; });
 
-saveBtn.addEventListener('click', () => {
-  if (!currentFile) return;
-  const size = 400;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-
-  const img = new Image();
-  img.onload = () => {
-    ctx.clearRect(0, 0, size, size);
-    const s = Math.max(size / img.width, size / img.height) * parseFloat(zoomRange.value);
-    const dw = img.width * s;
-    const dh = img.height * s;
-    const dx = (size - dw) / 2 + panX;
-    const dy = (size - dh) / 2 + panY;
-    ctx.drawImage(img, dx, dy, dw, dh);
-
-    canvas.toBlob((blob) => {
-      const input = document.getElementById('picture-input');
-      const dt = new DataTransfer();
-      dt.items.add(new File([blob], 'adjusted.png', { type: 'image/png' }));
-      input.files = dt.files;
-
-      const form = document.getElementById('adjust-picture-form');
-      form.submit();
-    }, 'image/png');
-  };
-  img.src = previewImg.src;
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  if (previewBox) previewBox.style.cursor = 'grab';
 });
 
-cancelBtn.addEventListener('click', () => {
-  previewArea.style.display = 'none';
-  currentFile = null;
-  previewImg.src = '';
-});
+if (saveBtn) {
+  saveBtn.addEventListener('click', () => {
+    if (!currentFile) return;
+    const form = document.getElementById('adjust-picture-form');
+    if (form) form.submit();
+  });
+}
+
+if (cancelBtn) {
+  cancelBtn.addEventListener('click', () => {
+    previewArea.style.display = 'none';
+    currentFile = null;
+    previewImg.src = '';
+    fileInput.value = '';
+  });
+}
 </script>
+@endsection
 @endsection
