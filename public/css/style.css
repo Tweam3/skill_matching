@@ -630,9 +630,8 @@ a:hover { color:var(--primary-hover); }
   .card { word-wrap: break-word; overflow-wrap: break-word; }
   .card form { flex-wrap: wrap; }
   .card input, .card select, .card textarea, .card button { max-width: 100%; box-sizing: border-box; }
-  .tabs { flex-direction: column; border-bottom: none; gap: 8px; }
-  .tab { width: 100%; text-align: left; border-bottom: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; }
-  .tab.active { border-bottom-color: #e5e7eb; background: var(--blue-light); }
+  .admin-register-form { flex-direction: column; align-items: stretch; }
+  .admin-register-form > div { width: 100%; }
 }
 @media (min-width:641px) and (max-width:1024px) {
   .cards-grid { grid-template-columns: repeat(2, 1fr); }

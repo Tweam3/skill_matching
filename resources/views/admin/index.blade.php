@@ -44,8 +44,8 @@
 
    <div id="tab-users" class="tab-panel">
      <h3>All Users</h3>
-     <div class="card" style="margin-bottom:16px;">
-       <form method="post" action="{{ route('admin.users.register') }}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
+      <div class="card" style="margin-bottom:16px;">
+        <form method="post" action="{{ route('admin.users.register') }}" class="admin-register-form" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;">
          @csrf
          <div style="display:flex;flex-direction:column;gap:4px;">
            <input type="text" name="name" placeholder="Full Name" required>
