@@ -15,7 +15,7 @@
         @php
           $pic = $user->Profile_Picture ? asset('storage/'.$user->Profile_Picture) : asset('images/default-avatar.svg');
         @endphp
-        <img src="{{ $pic }}" alt="Profile picture" style="width:88px; height:88px; border-radius:50%; object-fit:cover; border:3px solid var(--primary); background:var(--bg);">
+        <img src="{{ $pic }}" alt="Profile picture" onerror="this.src='{{ asset('images/default-avatar.svg') }}'" style="width:88px; height:88px; border-radius:50%; object-fit:cover; border:3px solid var(--primary); background:var(--bg);">
       </div>
       <div style="flex:1; min-width:220px;">
         <h3 style="margin:0 0 4px; font-size:1.25rem; color:var(--primary);">{{ $user->Full_Name }}</h3>
@@ -38,16 +38,8 @@
 
   <div class="card" style="margin-bottom:20px;">
     <h3 style="margin-top:0;">About</h3>
-    <p style="color:var(--muted); margin:0;">
-      @if($user->Role === 'Admin')
-        Platform administrator managing users, skills, and reports.
-      @elseif($user->Role === 'Faculty')
-        Faculty member at ISAT-U.
-      @elseif($user->Role === 'Staff')
-        Campus staff member.
-      @else
-        Student at ISAT-U.
-      @endif
+    <p style="color:var(--muted); margin:0; white-space:pre-line;">
+      {{ $user->Bio ?: 'No bio yet.' }}
     </p>
   </div>
 
