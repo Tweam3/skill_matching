@@ -14,6 +14,7 @@ use Illuminate\Http\Middleware\HandleCors;
 class Kernel extends HttpKernel
 {
     protected $middleware = [
+        \App\Http\Middleware\ForceHttps::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
