@@ -28,8 +28,7 @@ RUN a2enmod rewrite
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-COPY apache-laravel.conf /etc/apache2/sites-available/laravel.conf
-RUN a2dissite 000-default && a2ensite laravel
+COPY apache-laravel.conf /etc/apache2/sites-available/000-default.conf
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
