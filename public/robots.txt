@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://skill-matching-eg0c.onrender.com/sitemap.xml
