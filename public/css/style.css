@@ -46,11 +46,23 @@ body { margin:0; font-family: system-ui, -apple-system, sans-serif; background:v
   width:100%; padding:10px 12px; border:2px solid #E5E7EB; border-radius:8px;
   font-size:0.95rem; transition: border-color 0.2s; background:#fff;
 }
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.form-group input[type="password"],
+.form-group input[type="text"] {
+  width:100%; padding:10px 40px 10px 12px; border:2px solid #E5E7EB; border-radius:8px;
+  font-size:0.95rem; transition: border-color 0.2s; background:#fff;
+}
+.form-group input[type="password"]:focus,
+.form-group input[type="text"]:focus {
   outline:none; border-color:var(--primary);
 }
+.password-field { position:relative; }
+.password-toggle {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);
+  display:flex; align-items:center; justify-content:center;
+}
+.password-toggle:hover { color:var(--primary); }
+.password-toggle svg { width:18px; height:18px; }
 
 .btn {
   display:inline-flex; align-items:center; justify-content:center; gap:8px;

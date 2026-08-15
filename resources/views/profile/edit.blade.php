@@ -78,17 +78,32 @@
           <input type="hidden" name="section" value="password">
           <div class="form-group">
             <label>Current Password</label>
-            <input type="password" name="current_password" required>
+            <div class="password-field">
+              <input type="password" name="current_password" required>
+              <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </button>
+            </div>
             @error('current_password')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <div class="form-group">
             <label>New Password</label>
-            <input type="password" name="new_password" required minlength="8">
+            <div class="password-field">
+              <input type="password" name="new_password" required minlength="8">
+              <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </button>
+            </div>
             @error('new_password')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <div class="form-group">
             <label>Confirm New Password</label>
-            <input type="password" name="new_password_confirmation" required minlength="8">
+            <div class="password-field">
+              <input type="password" name="new_password_confirmation" required minlength="8">
+              <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </button>
+            </div>
           </div>
           <button type="submit" class="btn btn-primary btn-sm">Update Password</button>
         </form>
