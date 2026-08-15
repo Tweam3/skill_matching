@@ -32,5 +32,5 @@ services:
 databases:
   - name: skill-matching-db
     plan: free
-    databaseName: skill_matching_system
+    databaseName: skill_matching_system_t808
     user: skill_matching_user
