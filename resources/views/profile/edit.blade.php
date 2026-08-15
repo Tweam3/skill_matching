@@ -82,6 +82,28 @@
             <input type="email" name="email" value="{{ old('email', $user->Email) }}" required>
             @error('email')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
+          @if (auth()->user()->Role === 'Admin')
+          <div class="form-group">
+            <label>Role</label>
+            <select name="role" style="padding:8px;border-radius:6px;border:1px solid #E5E7EB;">
+              <option value="Student" {{ $user->Role === 'Student' ? 'selected' : '' }}>Student</option>
+              <option value="Faculty" {{ $user->Role === 'Faculty' ? 'selected' : '' }}>Faculty</option>
+              <option value="Staff" {{ $user->Role === 'Staff' ? 'selected' : '' }}>Staff</option>
+              <option value="Admin" {{ $user->Role === 'Admin' ? 'selected' : '' }}>Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Council</label>
+            <select name="council" style="padding:8px;border-radius:6px;border:1px solid #E5E7EB;">
+              <option value="" {{ !$user->Council ? 'selected' : '' }}>None</option>
+              <option value="HBM" {{ $user->Council === 'HBM' ? 'selected' : '' }}>HBM</option>
+              <option value="CSC" {{ $user->Council === 'CSC' ? 'selected' : '' }}>CSC</option>
+              <option value="BIT" {{ $user->Council === 'BIT' ? 'selected' : '' }}>BIT</option>
+              <option value="EDUC" {{ $user->Council === 'EDUC' ? 'selected' : '' }}>EDUC</option>
+              <option value="Unaffiliated" {{ $user->Council === 'Unaffiliated' ? 'selected' : '' }}>Unaffiliated</option>
+            </select>
+          </div>
+          @endif
           <button type="submit" class="btn btn-primary btn-sm">Save Name</button>
         </form>
       </div>

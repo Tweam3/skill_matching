@@ -72,7 +72,7 @@ class AnalyticsService
 
         if ($driver === 'pgsql') {
             $results = DB::select("
-                SELECT s.\"Category\", COUNT(*) as total, SUM(CASE WHEN a.Status = 'Completed' THEN 1 ELSE 0 END) as completed
+                SELECT s.\"Category\", COUNT(*) as total, SUM(CASE WHEN a.\"Status\" = 'Completed' THEN 1 ELSE 0 END) as completed
                 FROM skills as s
                 INNER JOIN skill_requests as r ON s.\"Skill_ID\" = r.\"Skill_ID\"
                 INNER JOIN request_assignments as a ON r.\"Request_ID\" = a.\"Request_ID\"
@@ -95,7 +95,7 @@ class AnalyticsService
         $data = [];
 
         foreach ($results as $row) {
-            $labels[] = $row->Category;
+            $labels[] = $row->category ?? $row->Category;
             $rate = $row->total > 0 ? (float) $row->completed / $row->total * 100 : 0;
             $data[] = round($rate, 1);
         }
@@ -167,16 +167,9 @@ class AnalyticsService
             default => "DATE_FORMAT({$column}, '%Y-%m')",
         };
 
-        $query = DB::table($table)
-            ->selectRaw("{$monthExpr} as month, COUNT(*) as count");
-
-        if ($driver === 'pgsql') {
-            $query->whereRaw("\"{$column}\" >= ?", [$since]);
-        } else {
-            $query->where($column, '>=', $since);
-        }
-
-        $rawData = $query
+        $rawData = DB::table($table)
+            ->selectRaw("{$monthExpr} as month, COUNT(*) as count")
+            ->where($column, '>=', $since)
             ->groupBy('month')
             ->pluck('count', 'month')
             ->toArray();
