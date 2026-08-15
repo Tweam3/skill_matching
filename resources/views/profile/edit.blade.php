@@ -9,6 +9,13 @@
     </div>
   </div>
 
+  @if (session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+  @endif
+  @if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+  @endif
+
   <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
     <div class="card">
       <div style="text-align:center; margin-bottom:16px;">
@@ -33,6 +40,7 @@
           <div class="form-group">
             <label>Choose a photo</label>
             <input type="file" name="profile_picture" accept="image/*">
+            @error('profile_picture')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           @if ($user->Profile_Picture)
             <label style="display:flex; align-items:center; gap:8px; font-size:0.875rem; margin-bottom:12px;">
@@ -51,11 +59,13 @@
           <input type="hidden" name="section" value="name">
           <div class="form-group">
             <label>Full Name</label>
-            <input type="text" name="name" value="{{ $user->Full_Name }}" required>
+            <input type="text" name="name" value="{{ old('name', $user->Full_Name) }}" required>
+            @error('name')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" value="{{ $user->Email }}" required>
+            <input type="email" name="email" value="{{ old('email', $user->Email) }}" required>
+            @error('email')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <button type="submit" class="btn btn-primary btn-sm">Save Name</button>
         </form>
@@ -69,10 +79,12 @@
           <div class="form-group">
             <label>Current Password</label>
             <input type="password" name="current_password" required>
+            @error('current_password')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <div class="form-group">
             <label>New Password</label>
             <input type="password" name="new_password" required minlength="8">
+            @error('new_password')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <div class="form-group">
             <label>Confirm New Password</label>
@@ -89,7 +101,8 @@
           <input type="hidden" name="section" value="about">
           <div class="form-group">
             <label>Bio</label>
-            <textarea name="bio" rows="4" maxlength="500" placeholder="Tell us about yourself...">{{ $user->Bio }}</textarea>
+            <textarea name="bio" rows="4" maxlength="500" placeholder="Tell us about yourself...">{{ old('bio', $user->Bio) }}</textarea>
+            @error('bio')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
           <button type="submit" class="btn btn-primary btn-sm">Save Bio</button>
         </form>
