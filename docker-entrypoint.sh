@@ -17,6 +17,7 @@ php /var/www/html/artisan config:clear
 php /var/www/html/artisan route:clear
 php /var/www/html/artisan migrate --force
 php /var/www/html/artisan db:seed --force
+rm -f /var/www/html/public/storage
 php /var/www/html/artisan storage:link
 
 exec "$@"
