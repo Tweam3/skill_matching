@@ -29,6 +29,7 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 RUN a2enmod rewrite
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 755 /var/www/html/public
 
 COPY apache-laravel.conf /etc/apache2/sites-available/000-default.conf
 
