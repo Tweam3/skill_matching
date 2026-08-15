@@ -3,9 +3,6 @@ services:
     name: skill-matching
     env: docker
     dockerfilePath: ./Dockerfile
-    domains:
-      - overthinkersimark.com
-      - www.overthinkersimark.com
     envVars:
       - key: APP_ENV
         value: production
@@ -14,7 +11,7 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        value: https://overthinkersimark.com
+        value: https://skill-matching-eg0c.onrender.com
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
