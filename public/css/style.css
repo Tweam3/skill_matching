@@ -29,6 +29,12 @@ body { margin:0; font-family: system-ui, -apple-system, sans-serif; background:v
 .auth-container {
   display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px;
   background: linear-gradient(135deg, #002147 0%, #0a2d6e 100%);
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 .auth-box {
   background:var(--surface); width:100%; max-width:420px; padding:40px; border-radius:16px;

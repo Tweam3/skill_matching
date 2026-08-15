@@ -68,14 +68,28 @@ class AnalyticsService
      */
     public function completionRateByCategory(): array
     {
-        $results = DB::table('skills as s')
-            ->join('skill_requests as r', 's.Skill_ID', '=', 'r.Skill_ID')
-            ->join('request_assignments as a', 'r.Request_ID', '=', 'a.Request_ID')
-            ->selectRaw('s.Category, COUNT(*) as total, SUM(CASE WHEN a.Status = \'Completed\' THEN 1 ELSE 0 END) as completed')
-            ->whereIn('a.Status', ['Completed', 'Failed'])
-            ->groupBy('s.Category')
-            ->orderBy('s.Category')
-            ->get();
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            $results = DB::select("
+                SELECT s.\"Category\", COUNT(*) as total, SUM(CASE WHEN a.Status = 'Completed' THEN 1 ELSE 0 END) as completed
+                FROM skills as s
+                INNER JOIN skill_requests as r ON s.\"Skill_ID\" = r.\"Skill_ID\"
+                INNER JOIN request_assignments as a ON r.\"Request_ID\" = a.\"Request_ID\"
+                WHERE a.\"Status\" IN ('Completed', 'Failed')
+                GROUP BY s.\"Category\"
+                ORDER BY s.\"Category\" ASC
+            ");
+        } else {
+            $results = DB::table('skills as s')
+                ->join('skill_requests as r', 's.Skill_ID', '=', 'r.Skill_ID')
+                ->join('request_assignments as a', 'r.Request_ID', '=', 'a.Request_ID')
+                ->selectRaw('s.Category, COUNT(*) as total, SUM(CASE WHEN a.Status = \'Completed\' THEN 1 ELSE 0 END) as completed')
+                ->whereIn('a.Status', ['Completed', 'Failed'])
+                ->groupBy('s.Category')
+                ->orderBy('s.Category')
+                ->get();
+        }
 
         $labels = [];
         $data = [];
