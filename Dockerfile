@@ -1,6 +1,4 @@
-FROM php:8.2-apache
-
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -13,8 +11,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_pgsql gd mbstring exif pcntl bcmath sockets \
-    && docker-php-ext-enable pdo_mysql pdo_pgsql gd
+    && docker-php-ext-install pdo_mysql pdo_pgsql gd mbstring exif pcntl bcmath sockets
 
 RUN pecl install redis && docker-php-ext-enable redis
 
@@ -26,18 +23,10 @@ COPY . /var/www/html/
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-RUN a2enmod rewrite headers expires mime
-
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 755 /var/www/html/public
-
-RUN printf '%s\n' 'ServerName skill-matching-eg0c.onrender.com' > /etc/apache2/conf-available/servername.conf
-RUN a2enconf servername
-
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
