@@ -630,6 +630,16 @@ a:hover { color:var(--primary-hover); }
   .card { word-wrap: break-word; overflow-wrap: break-word; }
   .card form { flex-wrap: wrap; }
   .card input, .card select, .card textarea, .card button { max-width: 100%; box-sizing: border-box; }
+  .mobile-tabs-wrapper { flex-wrap: wrap; gap: 6px; }
+  .mobile-tabs-wrapper .tab { flex: 0 0 auto; width: auto; }
+  .mobile-tabs-wrapper .tab.mobile-active {
+    flex: 1 1 100%;
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: var(--blue-light);
+  }
   .admin-register-form { flex-direction: column; align-items: stretch; }
   .admin-register-form > div { width: 100%; }
 }

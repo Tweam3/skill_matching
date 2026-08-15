@@ -9,12 +9,12 @@
     <div class="stat-card"><div class="stat-value">{{ count($pendingUsers) }}</div><div class="stat-label">Pending Approval</div></div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab(event, 'tab-pending')">Pending Accounts</button>
-    <button class="tab" onclick="switchTab(event, 'tab-users')">All Users</button>
-    <button class="tab" onclick="switchTab(event, 'tab-reports')">Reports</button>
-    <button class="tab" onclick="switchTab(event, 'tab-skills')">Skills</button>
-    <button class="tab" onclick="switchTab(event, 'tab-logs')">Logs</button>
+  <div class="tabs mobile-tabs-wrapper">
+    <button class="tab active" data-tab="tab-pending" onclick="switchTab(event, 'tab-pending')">Pending Accounts</button>
+    <button class="tab" data-tab="tab-users" onclick="switchTab(event, 'tab-users')">All Users</button>
+    <button class="tab" data-tab="tab-reports" onclick="switchTab(event, 'tab-reports')">Reports</button>
+    <button class="tab" data-tab="tab-skills" onclick="switchTab(event, 'tab-skills')">Skills</button>
+    <button class="tab" data-tab="tab-logs" onclick="switchTab(event, 'tab-logs')">Logs</button>
   </div>
 
   <div id="tab-pending" class="tab-panel">
@@ -195,6 +195,25 @@ function switchTab(event, tabId) {
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
   document.getElementById(tabId).style.display = 'block';
   event.currentTarget.classList.add('active');
+
+  if (window.innerWidth <= 640) {
+    const wrapper = document.querySelector('.mobile-tabs-wrapper');
+    if (!wrapper) return;
+    const clickedTab = event.currentTarget;
+    const siblings = Array.from(wrapper.querySelectorAll('.tab'));
+    siblings.forEach(s => s.classList.remove('mobile-active'));
+    clickedTab.classList.add('mobile-active');
+    wrapper.appendChild(clickedTab);
+  }
+}
+
+if (window.innerWidth <= 640) {
+  document.querySelectorAll('.mobile-tabs-wrapper .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.mobile-tabs-wrapper .tab').forEach(t => t.classList.remove('mobile-active'));
+      tab.classList.add('mobile-active');
+    });
+  });
 }
 </script>
 @endsection
