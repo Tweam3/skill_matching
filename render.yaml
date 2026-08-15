@@ -10,6 +10,8 @@ services:
         value: false
       - key: APP_KEY
         generateValue: true
+      - key: APP_URL
+        value: https://skill-matching-eg0c.onrender.com
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
