@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified.user'])->group(function () {
     Route::get('/profile/{id?}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/{id}/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/{id}/adjust-picture', [ProfileController::class, 'adjustPicture'])->name('profile.adjustPicture');
     Route::post('/profile/skill/add', [ProfileController::class, 'addSkill'])->name('profile.skill.add');
     Route::post('/profile/skill/remove', [ProfileController::class, 'removeSkill'])->name('profile.skill.remove');
     Route::post('/requests/{id}/complete', [RequestController::class, 'complete'])->name('requests.complete');

@@ -34,22 +34,37 @@
     <div>
       <div class="card" style="margin-bottom:20px;">
         <h3 style="margin-top:0;">Profile Picture</h3>
-        <form method="POST" action="{{ route('profile.update', $user->User_ID) }}" enctype="multipart/form-data">
+        <form id="adjust-picture-form" method="POST" action="{{ route('profile.adjustPicture', $user->User_ID) }}" enctype="multipart/form-data">
           @csrf
-          <input type="hidden" name="section" value="picture">
           <div class="form-group">
             <label>Choose a photo</label>
-            <input type="file" name="profile_picture" accept="image/*">
+            <input type="file" id="picture-input" name="profile_picture" accept="image/*">
             @error('profile_picture')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
-          @if ($user->Profile_Picture)
-            <label style="display:flex; align-items:center; gap:8px; font-size:0.875rem; margin-bottom:12px;">
-              <input type="checkbox" name="remove_profile_picture" value="1">
-              Remove current picture
-            </label>
-          @endif
-          <button type="submit" class="btn btn-primary btn-sm">Save Picture</button>
         </form>
+
+        <div id="picture-preview-area" style="display:none; margin-top:16px;">
+          <div style="position:relative; width:260px; height:260px; overflow:hidden; border-radius:50%; border:3px solid var(--primary); margin:0 auto; background:#f3f4f6;">
+            <img id="preview-img" src="" alt="Preview" style="position:absolute; left:0; top:0; transform-origin:0 0; cursor:grab; user-select:none;">
+          </div>
+          <div style="margin-top:16px; display:flex; flex-direction:column; gap:10px; align-items:center;">
+            <label style="font-size:0.875rem; font-weight:600;">Zoom</label>
+            <input type="range" id="zoom-range" min="1" max="3" step="0.05" value="1" style="width:260px;">
+            <div style="display:flex; gap:10px;">
+              <button type="button" id="save-picture-btn" class="btn btn-primary btn-sm">Save Picture</button>
+              <button type="button" id="cancel-picture-btn" class="btn btn-secondary btn-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        @if ($user->Profile_Picture)
+          <form method="POST" action="{{ route('profile.update', $user->User_ID) }}" enctype="multipart/form-data" style="margin-top:16px;">
+            @csrf
+            <input type="hidden" name="section" value="picture">
+            <input type="hidden" name="remove_profile_picture" value="1">
+            <button type="submit" class="btn btn-danger btn-sm">Remove Current Picture</button>
+          </form>
+        @endif
       </div>
 
       <div class="card" style="margin-bottom:20px;">
@@ -125,4 +140,129 @@
     </div>
   </div>
 </div>
+
+<script>
+let currentFile = null;
+let scale = 1;
+let panX = 0;
+let panY = 0;
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+
+const fileInput = document.getElementById('picture-input');
+const previewArea = document.getElementById('picture-preview-area');
+const previewImg = document.getElementById('preview-img');
+const zoomRange = document.getElementById('zoom-range');
+const saveBtn = document.getElementById('save-picture-btn');
+const cancelBtn = document.getElementById('cancel-picture-btn');
+
+if (fileInput) {
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    currentFile = file;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      previewImg.src = ev.target.result;
+      previewArea.style.display = 'block';
+      scale = 1;
+      panX = 0;
+      panY = 0;
+      zoomRange.value = 1;
+      previewImg.onload = fitPreview;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function fitPreview() {
+  const box = previewImg.parentElement;
+  const img = previewImg;
+  const naturalW = img.naturalWidth;
+  const naturalH = img.naturalHeight;
+  if (!naturalW || !naturalH) return;
+  const boxW = box.clientWidth;
+  const boxH = box.clientHeight;
+  const baseScale = Math.max(boxW / naturalW, boxH / naturalH);
+  scale = Math.max(1, parseFloat(zoomRange.value) * baseScale);
+  const drawW = naturalW * scale;
+  const drawH = naturalH * scale;
+  panX = (boxW - drawW) / 2;
+  panY = (boxH - drawH) / 2;
+  updateTransform();
+}
+
+function updateTransform() {
+  previewImg.style.width = previewImg.naturalWidth * scale + 'px';
+  previewImg.style.height = previewImg.naturalHeight * scale + 'px';
+  previewImg.style.left = panX + 'px';
+  previewImg.style.top = panY + 'px';
+}
+
+if (zoomRange) {
+  zoomRange.addEventListener('input', () => {
+    const box = previewImg.parentElement;
+    const rect = previewImg.getBoundingClientRect();
+    const centerX = box.clientWidth / 2;
+    const centerY = box.clientHeight / 2;
+    const oldScale = scale;
+    const baseScale = Math.max(box.clientWidth / previewImg.naturalWidth, box.clientHeight / previewImg.naturalHeight);
+    scale = Math.max(1, parseFloat(zoomRange.value) * baseScale);
+    panX = centerX - (centerX - panX) * (scale / oldScale);
+    panY = centerY - (centerY - panY) * (scale / oldScale);
+    updateTransform();
+  });
+}
+
+previewImg.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.clientX - panX;
+  startY = e.clientY - panY;
+});
+window.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  panX = e.clientX - startX;
+  panY = e.clientY - startY;
+  updateTransform();
+});
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+saveBtn.addEventListener('click', () => {
+  if (!currentFile) return;
+  const size = 400;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, size, size);
+    const s = Math.max(size / img.width, size / img.height) * parseFloat(zoomRange.value);
+    const dw = img.width * s;
+    const dh = img.height * s;
+    const dx = (size - dw) / 2 + panX;
+    const dy = (size - dh) / 2 + panY;
+    ctx.drawImage(img, dx, dy, dw, dh);
+
+    canvas.toBlob((blob) => {
+      const input = document.getElementById('picture-input');
+      const dt = new DataTransfer();
+      dt.items.add(new File([blob], 'adjusted.png', { type: 'image/png' }));
+      input.files = dt.files;
+
+      const form = document.getElementById('adjust-picture-form');
+      form.submit();
+    }, 'image/png');
+  };
+  img.src = previewImg.src;
+});
+
+cancelBtn.addEventListener('click', () => {
+  previewArea.style.display = 'none';
+  currentFile = null;
+  previewImg.src = '';
+});
+</script>
 @endsection
