@@ -14,14 +14,13 @@ use Illuminate\Http\Middleware\HandleCors;
 class Kernel extends HttpKernel
 {
     protected $middleware = [
-        \App\Http\Middleware\TrustHosts::class,
-        TrustProxies::class,
-        HandleCors::class,
-        PreventRequestsDuringMaintenance::class,
-        ValidatePostSize::class,
-        TrimStrings::class,
-        ConvertEmptyStringsToNull::class,
-        SecurityHeaders::class,
+        \App\Http\Middleware\TrustProxies::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
+        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
+        \App\Http\Middleware\SecurityHeaders::class,
+        \App\Http\Middleware\TrimStrings::class,
     ];
 
     /**
