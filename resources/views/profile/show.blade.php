@@ -57,11 +57,13 @@
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:20px; background:#FFFFFF;">
-    <h3 style="margin-top:0;">About</h3>
-    <p style="color:var(--muted); margin:0; white-space:pre-line;">
-      {{ $user->Bio ?: 'No bio yet.' }}
-    </p>
+  <div class="card" style="margin-bottom:20px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px;">
+    <h3 style="margin:0 0 12px; padding:0 4px; font-size:1.05rem; color:var(--primary);">About</h3>
+    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+      <p style="color:var(--muted); margin:0; white-space:pre-line;">
+        {{ $user->Bio ?: 'No bio yet.' }}
+      </p>
+    </div>
   </div>
 
   <div class="card">
