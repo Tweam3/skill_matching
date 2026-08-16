@@ -22,8 +22,7 @@
               $pic = $p->Profile_Picture ? asset('storage/'.$p->Profile_Picture) : asset('images/default-avatar.svg');
               $initial = strtoupper(substr($p->Full_Name ?? 'U', 0, 1));
             @endphp
-            <a href="{{ route('messages.index', ['with' => $p->User_ID]) }}"
-               class="conversation-item {{ $isActive ? 'active' : '' }}">
+            <div class="conversation-item {{ $isActive ? 'active' : '' }}" onclick="openConversation({{ $p->User_ID }}, this)">
               <img src="{{ $pic }}" alt="{{ $p->Full_Name }}" class="convo-avatar-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
               <div class="convo-avatar" style="display:none;">{{ $initial }}</div>
               <div class="conversation-info">
@@ -36,7 +35,7 @@
               <span class="conversation-menu-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('profile.show', $p->profile_slug) }}'" title="View Profile">
                 <span></span><span></span><span></span>
               </span>
-            </a>
+            </div>
           @endforeach
         </div>
       @endif
@@ -58,6 +57,9 @@
           $partnerPic = $partner && $partner->Profile_Picture ? asset('storage/'.$partner->Profile_Picture) : null;
         @endphp
         <div class="chat-header">
+          <button class="chat-back-btn" onclick="closeConversation()" title="Back to conversations">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
           @if ($partnerPic)
             <img src="{{ $partnerPic }}" alt="{{ $partnerName }}" class="chat-avatar-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
             <div class="chat-avatar" style="display:none;">{{ $partnerInitial }}</div>
@@ -126,12 +128,37 @@
 
 @if ($withId)
 <script>
+function openConversation(userId, element) {
+  if (window.innerWidth <= 640) {
+    document.querySelectorAll('.conversation-item').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    if (element) {
+      element.classList.add('active');
+    }
+    document.querySelector('.message-layout').classList.add('chat-open');
+  } else {
+    window.location.href = '/messages?with=' + userId;
+  }
+}
+
+function closeConversation() {
+  if (window.innerWidth <= 640) {
+    document.querySelector('.message-layout').classList.remove('chat-open');
+    history.pushState({}, '', '/messages');
+  }
+}
+
 const lastMessageId = {{ $messages->last()?->Message_ID ?? 0 }};
 const seenMessageIds = new Set();
 const chatContainer = document.getElementById('chat-messages');
 const withId = {{ $withId }};
 const authId = {{ auth()->id() }};
 const partnerName = @json($partnerName ?? 'User');
+
+if (window.innerWidth <= 640 && withId) {
+  document.querySelector('.message-layout').classList.add('chat-open');
+}
 
 document.querySelectorAll('[data-message-id]').forEach(el => {
   seenMessageIds.add(parseInt(el.getAttribute('data-message-id')));
