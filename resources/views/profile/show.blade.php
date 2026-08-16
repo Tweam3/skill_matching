@@ -54,11 +54,10 @@
           <a href="{{ route('profile.edit', $user->User_ID) }}" class="btn btn-primary btn-sm">Edit Profile</a>
         @endif
       </div>
-      </div>
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:20px;">
+  <div class="card" style="margin-bottom:20px; background:#FFFFFF;">
     <h3 style="margin-top:0;">About</h3>
     <p style="color:var(--muted); margin:0; white-space:pre-line;">
       {{ $user->Bio ?: 'No bio yet.' }}
