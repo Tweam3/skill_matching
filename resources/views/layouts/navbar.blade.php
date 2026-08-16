@@ -18,7 +18,7 @@
         <li><a href="{{ route('admin.index') }}">Admin Panel</a></li>
         <li><a href="{{ route('admin.analytics') }}">Analytics</a></li>
       @endif
-      <li><a href="{{ route('profile.show', auth()->user()->profile_slug) }}">Profile</a></li>
+      <li><a href="{{ route('profile.show', auth()->id()) }}">Profile</a></li>
       <li><a href="{{ route('settings.index') }}">Settings</a></li>
       <li>
         <form method="POST" action="{{ route('logout') }}" style="display:inline;">

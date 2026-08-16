@@ -81,7 +81,6 @@ class AdminController extends Controller
             'Role' => $validated['role'],
             'Is_Verified' => true,
             'Council' => $council,
-            'profile_slug' => User::generateUniqueProfileSlug(),
         ]);
         $this->logAction('register_user', 'Registered user: '.$validated['email'].' as '.$validated['role']);
 

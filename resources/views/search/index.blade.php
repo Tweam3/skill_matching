@@ -143,7 +143,7 @@
               @endif
             </div>
             <div style="margin-top:14px;">
-              <a href="{{ route('profile.show', $p->profile_slug) }}" class="btn btn-secondary btn-sm">View Profile</a>
+              <a href="{{ route('profile.show', $p->User_ID) }}" class="btn btn-secondary btn-sm">View Profile</a>
               @if (Auth::check() && Auth::id() !== $p->User_ID)
                 <a href="{{ route('messages.index', ['with' => $p->User_ID]) }}" class="btn btn-primary btn-sm">Message</a>
               @endif

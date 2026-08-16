@@ -34,7 +34,6 @@ class User extends Authenticatable
         'Warning_Count',
         'Rejection_Reason',
         'settings',
-        'profile_slug',
     ];
 
     protected $hidden = [
@@ -110,14 +109,5 @@ class User extends Authenticatable
     public function userMatches()
     {
         return $this->hasMany(UserMatch::class, 'Matched_User_ID', 'User_ID');
-    }
-
-    public static function generateUniqueProfileSlug(): string
-    {
-        do {
-            $slug = bin2hex(random_bytes(4));
-        } while (static::where('profile_slug', $slug)->exists());
-
-        return $slug;
     }
 }

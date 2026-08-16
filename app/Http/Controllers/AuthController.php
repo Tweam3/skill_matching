@@ -85,7 +85,6 @@ class AuthController extends Controller
             'Is_Verified' => $verified,
             'Account_Status' => $verified ? 'Active' : 'Pending',
             'Council' => $council,
-            'profile_slug' => User::generateUniqueProfileSlug(),
         ]);
 
         Auth::login($user);

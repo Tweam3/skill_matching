@@ -21,35 +21,10 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function show($slug = null)
+    public function show($id = null)
     {
-        $user = null;
-
-        if ($slug) {
-            $user = User::where('profile_slug', $slug)->first();
-
-            if (!$ $user) {
-                abort(404);
-            }
-        } else {
-            $user = Auth::user();
-        }
-
-        if (! $user->profile_slug) {
-            $user->profile_slug = User::generateUniqueProfileSlug();
-            $user->save();
-        }
-
-        $viewer = Auth::user();
-        $isOwner = $viewer && $viewer->User_ID === $user->User_ID;
-        $isAdmin = $viewer && $viewer->Role === 'Admin';
-        $profileVisibility = $user->settings['profile_visibility'] ?? 'public';
-        $canView = $isOwner || $isAdmin || $profileVisibility === 'public';
-
-        if (!$canView) {
-            return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills', 'canView'));
-        }
-
+        $userId = $id ?? Auth::id();
+        $user = User::findOrFail($userId);
         $userSkills = $user->skills;
         $allSkills = Skill::orderBy('Category')->orderBy('Subcategory')->orderBy('Skill_Title')->get();
         $groupedSkills = $allSkills->groupBy(function ($s) {
@@ -58,40 +33,43 @@ class ProfileController extends Controller
                 : ($s->Category ?: 'General');
         });
 
-        return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills', 'canView'));
+        return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills'));
     }
 
-    public function edit($slug = null)
+    public function edit($id = null)
     {
-        $user = $this->resolveUser($slug);
+        $userId = $id ?? Auth::id();
+        $user = User::findOrFail($userId);
 
         return view('profile.edit', compact('user'));
     }
 
-    public function adjustPicture(Request $request, $slug)
+    public function adjustPicture(Request $request, $id)
     {
         $request->validate([
             'profile_picture' => ['required', 'image', 'max:2048'],
         ]);
 
-        $user = $this->resolveUser($slug);
+        $userId = $id ?? Auth::id();
+        $user = User::findOrFail($userId);
 
         if ($request->hasFile('profile_picture')) {
             $this->deleteProfilePicture($user);
             $file = $request->file('profile_picture');
-            $filename = 'user_'.$user->User_ID.'_'.time().'.'.$file->getClientOriginalExtension();
+            $filename = 'user_'.$userId.'_'.time().'.'.$file->getClientOriginalExtension();
             $path = $file->storeAs('profile-pictures', $filename, 'public');
             $user->Profile_Picture = $path;
             $user->save();
         }
 
-        return redirect()->route('profile.show', $user->profile_slug)->with('success', 'Profile picture updated.');
+        return redirect()->route('profile.show', $user->User_ID)->with('success', 'Profile picture updated.');
     }
 
-    public function update(Request $request, $slug)
+    public function update(Request $request, $id)
     {
-        $user = $this->resolveUser($slug);
-        $isAdmin = Auth::user() && Auth::user()->Role === 'Admin' && Auth::id() !== $user->User_ID;
+        $userId = $id ?? Auth::id();
+        $user = User::findOrFail($userId);
+        $isAdmin = Auth::user() && Auth::user()->Role === 'Admin' && Auth::id() !== $userId;
         $section = $request->input('section', 'name');
 
         if ($section === 'password') {
@@ -112,7 +90,7 @@ class ProfileController extends Controller
             $user->Password_Hash = Hash::make($request->input('new_password'));
             $user->save();
 
-            return redirect()->route('profile.show', $user->profile_slug)->with('success', 'Password updated.');
+            return redirect()->route('profile.show', $user->User_ID)->with('success', 'Password updated.');
         }
 
         if ($section === 'about') {
@@ -123,7 +101,7 @@ class ProfileController extends Controller
             $user->Bio = $request->input('bio');
             $user->save();
 
-            return redirect()->route('profile.show', $user->profile_slug)->with('success', 'Bio updated.');
+            return redirect()->route('profile.show', $user->User_ID)->with('success', 'Bio updated.');
         }
 
         if ($section === 'picture') {
@@ -143,7 +121,7 @@ class ProfileController extends Controller
             }
             $user->save();
 
-            return redirect()->route('profile.show', $user->profile_slug)->with('success', 'Profile picture updated.');
+            return redirect()->route('profile.show', $user->User_ID)->with('success', 'Profile picture updated.');
         }
 
         $request->validate([
@@ -165,24 +143,7 @@ class ProfileController extends Controller
         }
         $user->save();
 
-        return redirect()->route('profile.show', $user->profile_slug)->with('success', 'Profile updated.');
-    }
-
-    protected function resolveUser($slug)
-    {
-        $user = null;
-
-        if ($slug) {
-            $user = User::where('profile_slug', $slug)->first();
-
-            if (! $user) {
-                abort(404);
-            }
-        } else {
-            $user = Auth::user();
-        }
-
-        return $user;
+        return redirect()->route('profile.show', $user->User_ID)->with('success', 'Profile updated.');
     }
 
     protected function deleteProfilePicture(User $user): void

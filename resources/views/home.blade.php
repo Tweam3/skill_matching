@@ -100,7 +100,7 @@
       <a href="{{ route('dashboard') }}" class="btn btn-primary">Dashboard</a>
       <a href="{{ route('matches.index') }}" class="btn btn-secondary">Browse Matches</a>
       <a href="{{ route('messages.index') }}" class="btn btn-secondary">Messages</a>
-      <a href="{{ route('profile.show', auth()->user()->profile_slug) }}" class="btn btn-secondary">My Profile</a>
+      <a href="{{ route('profile.show', auth()->id()) }}" class="btn btn-secondary">My Profile</a>
     </div>
   </div>
 @endif
