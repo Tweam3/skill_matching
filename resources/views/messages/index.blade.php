@@ -126,7 +126,6 @@
   </div>
 </div>
 
-@if ($withId)
 <script>
 function openConversation(userId, element) {
   if (window.innerWidth <= 640) {
@@ -148,7 +147,10 @@ function closeConversation() {
     history.pushState({}, '', '/messages');
   }
 }
+</script>
 
+@if ($withId)
+<script>
 const lastMessageId = {{ $messages->last()?->Message_ID ?? 0 }};
 const seenMessageIds = new Set();
 const chatContainer = document.getElementById('chat-messages');
