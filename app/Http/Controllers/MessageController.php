@@ -41,7 +41,7 @@ class MessageController extends Controller
             })
             ->unique()
             ->toArray();
-        $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name', 'Profile_Picture']);
+        $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name', 'Profile_Picture', 'profile_slug']);
 
         if ($request->query('ajax')) {
             return response()->json([
