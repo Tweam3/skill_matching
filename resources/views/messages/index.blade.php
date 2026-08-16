@@ -129,13 +129,7 @@
 <script>
 function openConversation(userId, element) {
   if (window.innerWidth <= 640) {
-    document.querySelectorAll('.conversation-item').forEach(function(el) {
-      el.classList.remove('active');
-    });
-    if (element) {
-      element.classList.add('active');
-    }
-    document.querySelector('.message-layout').classList.add('chat-open');
+    window.location.href = '/messages?with=' + userId;
   } else {
     window.location.href = '/messages?with=' + userId;
   }
@@ -143,8 +137,7 @@ function openConversation(userId, element) {
 
 function closeConversation() {
   if (window.innerWidth <= 640) {
-    document.querySelector('.message-layout').classList.remove('chat-open');
-    history.pushState({}, '', '/messages');
+    window.location.href = '/messages';
   }
 }
 </script>
