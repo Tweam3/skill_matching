@@ -32,6 +32,7 @@ class User extends Authenticatable
         'Is_Verified',
         'Account_Status',
         'Warning_Count',
+        'Suspended_At',
         'Rejection_Reason',
         'settings',
     ];

@@ -15,7 +15,15 @@ class EnsureUserIsActive
             $status = strtolower($user->Account_Status ?? 'active');
 
             if ($status === 'suspended') {
-                return redirect()->route('account.suspended');
+                $suspendedAt = $user->Suspended_At;
+                if ($suspendedAt && $suspendedAt->addDay()->isPast()) {
+                    $user->update([
+                        'Account_Status' => 'Active',
+                        'Suspended_At' => null,
+                    ]);
+                } else {
+                    return redirect()->route('account.suspended');
+                }
             }
 
             if ($status === 'banned') {

@@ -40,12 +40,13 @@ class ModerationService
         $user->update([
             'Account_Status' => 'Suspended',
             'Warning_Count' => $count + 1,
+            'Suspended_At' => now(),
         ]);
 
         return [
             'status' => 'Suspended',
             'level' => 2,
-            'message' => 'Your account has been suspended due to repeated violations. A further violation will result in a permanent ban.',
+            'message' => 'Your account has been suspended for 1 day due to repeated violations. A further violation will result in a permanent ban.',
         ];
     }
 

@@ -27,7 +27,15 @@ class AuthController extends Controller
 
         $status = strtolower($user->Account_Status ?? 'active');
         if ($status === 'suspended') {
-            return back()->withErrors(['email' => 'Your account has been suspended. Please contact support.']);
+            $suspendedAt = $user->Suspended_At;
+            if ($suspendedAt && $suspendedAt->addDay()->isPast()) {
+                $user->update([
+                    'Account_Status' => 'Active',
+                    'Suspended_At' => null,
+                ]);
+            } else {
+                return back()->withErrors(['email' => 'Your account has been suspended. Please contact support.']);
+            }
         }
         if ($status === 'banned') {
             return back()->withErrors(['email' => 'Your account has been banned. Please contact support.']);
