@@ -39,9 +39,12 @@ class MessageController extends Controller
             ->map(function ($m) use ($uid) {
                 return $m->Sender_ID == $uid ? $m->Receiver_ID : $m->Sender_ID;
             })
+            ->filter(function ($id) use ($uid) {
+                return (int) $id !== (int) $uid;
+            })
             ->unique()
             ->toArray();
-        $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name', 'Profile_Picture', 'profile_slug']);
+        $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name', 'Profile_Picture']);
 
         if ($request->query('ajax')) {
             return response()->json([

@@ -32,9 +32,11 @@
               @if ($isActive)
                 <span class="chat-user-online" title="Active conversation"></span>
               @endif
-              <a href="{{ route('profile.show', $p->User_ID) }}" class="conversation-menu-btn" title="View Profile" onclick="event.stopPropagation()">
-                <span></span><span></span><span></span>
-              </a>
+              @if ($p->User_ID !== auth()->id())
+                <a href="/profile/{{ $p->User_ID }}" class="conversation-menu-btn" title="View Profile" onclick="event.stopPropagation()">
+                  <span></span><span></span><span></span>
+                </a>
+              @endif
             </div>
           @endforeach
         </div>
