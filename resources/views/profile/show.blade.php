@@ -5,9 +5,31 @@
   <div class="page-header">
     <h2>Profile</h2>
     <div class="page-header-actions">
-      <a href="{{ route('skills.index') }}" class="btn btn-secondary btn-sm">Add Skill</a>
+      @auth
+        @if (auth()->user()->User_ID === $user->User_ID || auth()->user()->Role === 'Admin')
+          <a href="{{ route('skills.index') }}" class="btn btn-secondary btn-sm">Add Skill</a>
+        @endif
+      @endauth
     </div>
   </div>
+
+  @php
+    $viewer = auth()->user();
+    $isOwner = $viewer && $viewer->User_ID === $user->User_ID;
+    $isAdmin = $viewer && $viewer->Role === 'Admin';
+    $profileVisibility = $user->settings['profile_visibility'] ?? 'public';
+    $canView = $isOwner || $isAdmin || $profileVisibility === 'public';
+  @endphp
+
+  @if (!$canView)
+    <div class="card">
+      <div style="text-align:center; padding:40px 20px;">
+        <div style="font-size:3rem; margin-bottom:16px;">&#128274;</div>
+        <h3 style="margin:0 0 8px;">Private Profile</h3>
+        <p style="color:var(--muted); margin:0;">This user has set their profile to private.</p>
+      </div>
+    </div>
+  @else
 
   <div class="card" style="margin-bottom:20px;">
     <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
@@ -139,4 +161,5 @@ function closeReportModal() {
   document.getElementById('report-modal-overlay').classList.remove('active');
 }
 </script>
+@endif
 @endsection

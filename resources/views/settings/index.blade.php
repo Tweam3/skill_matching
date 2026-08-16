@@ -74,7 +74,7 @@
             <label>Profile Visibility</label>
             <select name="profile_visibility">
               <option value="public" {{ ($settings['profile_visibility'] ?? 'public') === 'public' ? 'selected' : '' }}>Public — everyone can see my profile</option>
-              <option value="private" {{ ($settings['profile_visibility'] ?? '') === 'private' ? 'selected' : '' }}>Private — only matched users can see my profile</option>
+              <option value="private" {{ ($settings['profile_visibility'] ?? '') === 'private' ? 'selected' : '' }}>Private — only I and admins can see my profile</option>
             </select>
           </div>
         </div>

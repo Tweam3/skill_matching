@@ -113,6 +113,9 @@
         <form method="POST" action="{{ route('profile.update', $user->User_ID) }}">
           @csrf
           <input type="hidden" name="section" value="password">
+          @if (auth()->user()->Role === 'Admin' && auth()->id() !== $user->User_ID)
+            <div class="alert alert-info" style="padding:10px 12px; margin-bottom:14px; font-size:0.9rem;">As an admin, you can reset this user's password without their current password.</div>
+          @else
           <div class="form-group">
             <label>Current Password</label>
             <div class="password-field">
@@ -123,6 +126,7 @@
             </div>
             @error('current_password')<div class="alert alert-danger" style="padding:8px 12px; margin-top:6px;">{{ $message }}</div>@enderror
           </div>
+          @endif
           <div class="form-group">
             <label>New Password</label>
             <div class="password-field">

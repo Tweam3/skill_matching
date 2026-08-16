@@ -25,6 +25,16 @@ class ProfileController extends Controller
     {
         $userId = $id ?? Auth::id();
         $user = User::findOrFail($userId);
+        $viewer = Auth::user();
+        $isOwner = $viewer && $viewer->User_ID === $user->User_ID;
+        $isAdmin = $viewer && $viewer->Role === 'Admin';
+        $profileVisibility = $user->settings['profile_visibility'] ?? 'public';
+        $canView = $isOwner || $isAdmin || $profileVisibility === 'public';
+
+        if (!$canView) {
+            return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills', 'canView'));
+        }
+
         $userSkills = $user->skills;
         $allSkills = Skill::orderBy('Category')->orderBy('Subcategory')->orderBy('Skill_Title')->get();
         $groupedSkills = $allSkills->groupBy(function ($s) {
@@ -33,7 +43,7 @@ class ProfileController extends Controller
                 : ($s->Category ?: 'General');
         });
 
-        return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills'));
+        return view('profile.show', compact('user', 'userSkills', 'allSkills', 'groupedSkills', 'canView'));
     }
 
     public function edit($id = null)
@@ -74,12 +84,17 @@ class ProfileController extends Controller
 
         if ($section === 'password') {
             $request->validate([
-                'current_password' => ['required', 'string'],
                 'new_password' => ['required', 'string', 'min:8', 'confirmed'],
             ]);
 
-            if (!Hash::check($request->input('current_password'), $user->Password_Hash)) {
-                return back()->with('error', 'Current password is incorrect.');
+            if (!$isAdmin) {
+                $request->validate([
+                    'current_password' => ['required', 'string'],
+                ]);
+
+                if (!Hash::check($request->input('current_password'), $user->Password_Hash)) {
+                    return back()->with('error', 'Current password is incorrect.');
+                }
             }
 
             $user->Password_Hash = Hash::make($request->input('new_password'));
