@@ -28,9 +28,11 @@ class MessageController extends Controller
         }
         $partners = Message::where('Sender_ID', $uid)
             ->orWhere('Receiver_ID', $uid)
-            ->selectRaw('DISTINCT CASE WHEN "Sender_ID" = ? THEN "Receiver_ID" ELSE "Sender_ID" END as User_ID', [$uid])
             ->get()
-            ->pluck('User_ID')
+            ->map(function ($m) use ($uid) {
+                return $m->Sender_ID == $uid ? $m->Receiver_ID : $m->Sender_ID;
+            })
+            ->unique()
             ->toArray();
         $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name']);
 
@@ -54,6 +56,7 @@ class MessageController extends Controller
             'Sender_ID' => Auth::id(),
             'Receiver_ID' => $validated['to_id'],
             'Message_Text' => $validated['message'],
+            'Sent_At' => now(),
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
