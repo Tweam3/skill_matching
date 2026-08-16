@@ -44,6 +44,9 @@ Route::middleware(['auth', 'verified.user'])->group(function () {
     Route::post('/profile/skill/add', [ProfileController::class, 'addSkill'])->name('profile.skill.add');
     Route::post('/profile/skill/remove', [ProfileController::class, 'removeSkill'])->name('profile.skill.remove');
     Route::post('/requests/{id}/complete', [RequestController::class, 'complete'])->name('requests.complete');
+    Route::post('/requests/{id}/fail', [RequestController::class, 'fail'])->name('requests.fail');
+    Route::get('/requests/{id}/provider-feedback', [RequestController::class, 'providerFeedback'])->name('requests.provider-feedback');
+    Route::post('/requests/{id}/provider-feedback', [RequestController::class, 'submitProviderFeedback'])->name('requests.submit-provider-feedback');
     Route::resource('requests', RequestController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
     Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
     Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show');

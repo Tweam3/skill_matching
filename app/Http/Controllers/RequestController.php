@@ -169,4 +169,92 @@ class RequestController extends Controller
 
         return redirect()->route('requests.show', $id)->with('success', 'Request marked as completed. Please leave a review for the assigned user.');
     }
+
+    public function fail($id)
+    {
+        $request = SkillRequest::with('assignments')->findOrFail($id);
+        $uid = Auth::id();
+        if ($uid != $request->User_ID) {
+            abort(403);
+        }
+        DB::transaction(function () use ($request) {
+            $acceptedAssignment = $request->assignments->firstWhere('Status', 'Accepted');
+            if ($acceptedAssignment) {
+                $acceptedAssignment->update(['Status' => 'Failed', 'Completed_At' => now()]);
+                $providerId = $acceptedAssignment->User_ID;
+                Notification::create([
+                    'User_ID' => $providerId,
+                    'Notif_Type' => 'Failed Request',
+                    'Message' => 'The request "'.$request->Title.'" was marked as failed by the requester. Please provide feedback.',
+                    'url' => route('requests.provider-feedback', $request->Request_ID),
+                ]);
+            }
+            $request->update(['Status' => 'Failed']);
+        });
+
+        return redirect()->route('requests.show', $id)->with('success', 'Request marked as failed. Please leave feedback for the provider.');
+    }
+
+    public function providerFeedback($id)
+    {
+        $request = SkillRequest::with(['assignments' => function ($q) {
+            $q->where('Status', 'Failed')->with('user');
+        }])->findOrFail($id);
+        $acceptedAssignment = $request->assignments->firstWhere('Status', 'Failed');
+        if (! $acceptedAssignment) {
+            return redirect()->route('requests.index')->with('error', 'No failed assignment found for this request.');
+        }
+        $provider = $acceptedAssignment->user;
+        $requester = $request->user;
+
+        return view('requests.provider-feedback', compact('request', 'provider', 'requester', 'acceptedAssignment'));
+    }
+
+    public function submitProviderFeedback(Request $request, $id)
+    {
+        $skillRequest = SkillRequest::with('assignments')->findOrFail($id);
+        $acceptedAssignment = $skillRequest->assignments->firstWhere('Status', 'Failed');
+        if (! $acceptedAssignment) {
+            return back()->with('error', 'No failed assignment found for this request.');
+        }
+
+        $validated = $request->validate([
+            'feedback_type' => ['required', 'in:rate,report'],
+            'rating' => ['nullable', 'integer', 'between:1,5'],
+            'comment' => ['nullable', 'string', 'max:500'],
+            'reason' => ['required_if:feedback_type,report', 'string'],
+            'proof' => ['nullable', 'string'],
+        ]);
+
+        if ($validated['feedback_type'] === 'rate') {
+            if (! $validated['rating'] || ! $validated['comment']) {
+                return back()->with('error', 'Rating and comment are required.');
+            }
+            Review::create([
+                'Reviewed_User_ID' => $skillRequest->User_ID,
+                'Reviewer_ID' => Auth::id(),
+                'Request_ID' => $id,
+                'Rating' => $validated['rating'],
+                'Comment' => $validated['comment'],
+            ]);
+            $avg = Review::where('Reviewed_User_ID', $skillRequest->User_ID)->avg('Rating');
+            $user = User::find($skillRequest->User_ID);
+            $user->Avg_Rating = round($avg, 2);
+            $user->Total_Completed = ($user->Total_Completed ?? 0) + 1;
+            $user->save();
+
+            return redirect()->route('requests.show', $id)->with('success', 'Feedback submitted for the requester.');
+        }
+
+        Report::create([
+            'Reporter_ID' => Auth::id(),
+            'Reported_User_ID' => $skillRequest->User_ID,
+            'Request_ID' => $id,
+            'Reason' => $validated['reason'],
+            'Proof' => $validated['proof'] ?? null,
+            'Status' => 'Pending',
+        ]);
+
+        return redirect()->route('requests.show', $id)->with('success', 'Report submitted for the requester.');
+    }
 }

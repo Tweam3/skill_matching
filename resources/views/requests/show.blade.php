@@ -16,24 +16,49 @@
     @if (auth()->id() == $request->User_ID && $request->Status === 'Pending')
       <div style="margin-top:16px; padding:16px; background:#F0FDF4; border-radius:8px; border:1px solid #BBF7D0;">
         <strong>Work in Progress</strong>
-        <p style="color:var(--muted); margin:8px 0 12px;">Once the work is done, mark this request as completed.</p>
+        <p style="color:var(--muted); margin:8px 0 12px;">Once the work is done, mark this request as completed. If the request failed or wasn't fulfilled, mark it as failed.</p>
         <form method="POST" action="{{ route('requests.complete', $request->Request_ID) }}" style="display:inline;">
           @csrf
           <button type="submit" class="btn btn-success">Mark as Completed</button>
         </form>
+        <form method="POST" action="{{ route('requests.fail', $request->Request_ID) }}" style="display:inline; margin-left:10px;" onsubmit="return confirm('Mark this request as failed? This will notify the assigned user.');">
+          @csrf
+          <button type="submit" class="btn btn-danger">Mark as Failed</button>
+        </form>
       </div>
     @endif
 
-    @if (session('success') && str_contains(session('success'), 'completed'))
+    @if (session('success') && str_contains(session('success'), 'failed'))
       @php
-        $acceptedAssignment = $request->assignments->firstWhere('Status', 'Completed');
-        $assignedUser = $acceptedAssignment->user ?? null;
-        $hasReviewed = $assignedUser ? \App\Models\Review::where('Request_ID', $request->Request_ID)->where('Reviewer_ID', auth()->id())->exists() : false;
+        $failedAssignment = $request->assignments->firstWhere('Status', 'Failed');
+        $provider = $failedAssignment->user ?? null;
+        $hasReviewed = $provider ? \App\Models\Review::where('Request_ID', $request->Request_ID)->where('Reviewer_ID', auth()->id())->exists() : false;
       @endphp
-      @if ($assignedUser && ! $hasReviewed)
-        <div style="margin-top:20px; padding:16px; background:#EFF6FF; border-radius:8px; border:1px solid #BFDBFE;">
-          <h3>Leave a Review for {{ $assignedUser->Full_Name }}</h3>
-          <form method="POST" action="{{ route('assignments.review', $acceptedAssignment->Assignment_ID) }}" style="margin-top:12px;">
+      @if ($provider && ! $hasReviewed)
+        <div style="margin-top:20px; padding:16px; background:#FFF5F5; border-radius:8px; border:1px solid #FECACA;">
+          <h3>Feedback for {{ $provider->Full_Name }}</h3>
+          <p style="color:var(--muted); margin:8px 0 12px;">This request was marked as failed. You can report this user or leave a review.</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-danger btn-sm" onclick="document.getElementById('failed-report-form').style.display='block';">Report User</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('failed-review-form').style.display='block';">Leave Review</button>
+          </div>
+
+          <form id="failed-report-form" method="POST" action="{{ route('reports.store') }}" style="margin-top:16px; display:none;">
+            @csrf
+            <input type="hidden" name="reported_user_id" value="{{ $provider->User_ID }}">
+            <input type="hidden" name="request_id" value="{{ $request->Request_ID }}">
+            <div class="form-group">
+              <label>Reason</label>
+              <textarea name="reason" rows="4" required class="form-control" style="width:100%;padding:10px;border:2px solid #E5E7EB;border-radius:8px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Proof (Optional)</label>
+              <input type="text" name="proof" placeholder="Link or description of evidence" class="form-control" style="width:100%;padding:10px;border:2px solid #E5E7EB;border-radius:8px;">
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm">Submit Report</button>
+          </form>
+
+          <form id="failed-review-form" method="POST" action="{{ route('assignments.review', $failedAssignment->Assignment_ID) }}" style="margin-top:16px; display:none;">
             @csrf
             <div class="form-group">
               <label>Rating (1-5)</label>
@@ -47,7 +72,7 @@
               <label>Comment</label>
               <textarea name="comment" rows="3" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
+            <button type="submit" class="btn btn-primary btn-sm">Submit Review</button>
           </form>
         </div>
       @endif
