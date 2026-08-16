@@ -147,7 +147,7 @@ class AdminController extends Controller
                     Notification::create([
                         'User_ID' => $reporterId,
                         'Notif_Type' => 'Report',
-                        'Message' => 'Action taken on your report. Reported user has been '.$result['status'].'.',
+                        'Message' => 'Action taken on your report. Reported user has been '.($result['status'] === 'Warning' ? 'Warned' : $result['status']).'.',
                         'url' => route('dashboard'),
                     ]);
                 Notification::create([
