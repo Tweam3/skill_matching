@@ -267,6 +267,10 @@ a:hover { color:var(--primary-hover); }
   align-items:center; justify-content:center; font-weight:700;
   font-size:1rem; flex-shrink:0;
 }
+.conversation-item .convo-avatar-img {
+  width:44px; height:44px; border-radius:50%;
+  object-fit:cover; flex-shrink:0; background:var(--bg);
+}
 
 .conversation-info {
   flex:1; min-width:0;
@@ -329,6 +333,10 @@ a:hover { color:var(--primary-hover); }
   align-items:center; justify-content:center; font-weight:700;
   flex-shrink:0;
 }
+.chat-header .chat-avatar-img {
+  width:40px; height:40px; border-radius:50%;
+  object-fit:cover; flex-shrink:0; background:var(--bg);
+}
 
 .chat-header .chat-user-online {
   width:10px; height:10px; border-radius:50%;
@@ -386,6 +394,27 @@ a:hover { color:var(--primary-hover); }
 
 .message-row.sent .message-meta {
   color:rgba(255,255,255,0.7);
+}
+
+.message-avatar {
+  width:32px; height:32px; border-radius:50%;
+  background:var(--primary); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-weight:700;
+  font-size:0.8rem; flex-shrink:0; align-self:flex-end;
+}
+.message-avatar-img {
+  width:32px; height:32px; border-radius:50%;
+  object-fit:cover; flex-shrink:0; background:var(--bg); align-self:flex-end;
+}
+.read-receipt {
+  font-size:0.7rem; font-weight:600;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.read-receipt.read {
+  color:#4ade80;
+}
+.read-receipt:not(.read) {
+  color:rgba(255,255,255,0.6);
 }
 
 .message-timestamp {

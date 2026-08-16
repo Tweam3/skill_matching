@@ -25,6 +25,13 @@ class MessageController extends Controller
             }
 
             $messages = $query->get();
+
+            if ($withId && !$request->query('ajax')) {
+                Message::where('Sender_ID', $withId)
+                    ->where('Receiver_ID', $uid)
+                    ->whereNull('read_at')
+                    ->update(['read_at' => now()]);
+            }
         }
         $partners = Message::where('Sender_ID', $uid)
             ->orWhere('Receiver_ID', $uid)
@@ -34,7 +41,7 @@ class MessageController extends Controller
             })
             ->unique()
             ->toArray();
-        $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name']);
+        $users = User::whereIn('User_ID', $partners)->get(['User_ID', 'Full_Name', 'Profile_Picture']);
 
         if ($request->query('ajax')) {
             return response()->json([

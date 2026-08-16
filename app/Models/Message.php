@@ -13,10 +13,11 @@ class Message extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['Sender_ID', 'Receiver_ID', 'Message_Text', 'Sent_At'];
+    protected $fillable = ['Sender_ID', 'Receiver_ID', 'Message_Text', 'Sent_At', 'read_at'];
 
     protected $casts = [
         'Sent_At' => 'datetime',
+        'read_at' => 'datetime',
     ];
 
     public function sender(): BelongsTo

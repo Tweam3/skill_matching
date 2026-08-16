@@ -19,11 +19,13 @@
           @foreach ($users as $p)
             @php
               $isActive = $p->User_ID == $withId;
+              $pic = $p->Profile_Picture ? asset('storage/'.$p->Profile_Picture) : asset('images/default-avatar.svg');
               $initial = strtoupper(substr($p->Full_Name ?? 'U', 0, 1));
             @endphp
             <a href="{{ route('messages.index', ['with' => $p->User_ID]) }}"
                class="conversation-item {{ $isActive ? 'active' : '' }}">
-              <div class="convo-avatar">{{ $initial }}</div>
+              <img src="{{ $pic }}" alt="{{ $p->Full_Name }}" class="convo-avatar-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+              <div class="convo-avatar" style="display:none;">{{ $initial }}</div>
               <div class="conversation-info">
                 <div class="conversation-name">{{ $p->Full_Name }}</div>
                 <div class="conversation-preview">Click to view conversation</div>
@@ -53,9 +55,15 @@
           $partner = $users->firstWhere('User_ID', $withId);
           $partnerName = $partner?->Full_Name ?? 'User';
           $partnerInitial = $partnerName ? strtoupper(substr($partnerName, 0, 1)) : 'U';
+          $partnerPic = $partner && $partner->Profile_Picture ? asset('storage/'.$partner->Profile_Picture) : null;
         @endphp
         <div class="chat-header">
-          <div class="chat-avatar">{{ $partnerInitial }}</div>
+          @if ($partnerPic)
+            <img src="{{ $partnerPic }}" alt="{{ $partnerName }}" class="chat-avatar-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div class="chat-avatar" style="display:none;">{{ $partnerInitial }}</div>
+          @else
+            <div class="chat-avatar">{{ $partnerInitial }}</div>
+          @endif
           <div style="flex:1;">
             <div class="chat-header-name">{{ $partnerName }}</div>
             <div class="chat-header-sub">Online</div>
@@ -70,12 +78,31 @@
             </div>
           @else
             @foreach ($messages as $m)
-              @php $isSent = $m->Sender_ID == auth()->id(); @endphp
+              @php
+                $isSent = $m->Sender_ID == auth()->id();
+                $sender = $isSent ? auth()->user() : $partner;
+                $senderPic = $sender && $sender->Profile_Picture ? asset('storage/'.$sender->Profile_Picture) : null;
+                $senderInitial = $sender ? strtoupper(substr($sender->Full_Name ?? 'U', 0, 1)) : 'U';
+                $isRead = !$isSent && $m->read_at ? true : false;
+              @endphp
               <div class="message-row {{ $isSent ? 'sent' : '' }}" data-message-id="{{ $m->Message_ID }}">
+                @if (!$isSent)
+                  @if ($senderPic)
+                    <img src="{{ $senderPic }}" alt="{{ $sender->Full_Name ?? 'User' }}" class="message-avatar-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="message-avatar" style="display:none;">{{ $senderInitial }}</div>
+                  @else
+                    <div class="message-avatar">{{ $senderInitial }}</div>
+                  @endif
+                @endif
                 <div class="message-bubble">
                   <div class="message-meta">
                     <span>{{ $isSent ? 'You' : $partnerName }}</span>
                     <span class="message-timestamp">{{ \Carbon\Carbon::parse($m->Sent_At)->format('g:i A') }}</span>
+                    @if ($isSent)
+                      <span class="read-receipt {{ $m->read_at ? 'read' : '' }}" title="{{ $m->read_at ? 'Seen' : 'Sent' }}">
+                        {{ $m->read_at ? 'Seen' : 'Sent' }}
+                      </span>
+                    @endif
                   </div>
                   <div class="message-text">{{ $m->Message_Text }}</div>
                 </div>
@@ -130,12 +157,24 @@ function appendMessage(message) {
       '<div class="message-meta">' +
         '<span>' + (isSent ? 'You' : partnerName) + '</span>' +
         '<span class="message-timestamp">' + time + '</span>' +
+        (isSent ? (message.read_at ? '<span class="read-receipt read" title="Seen">Seen</span>' : '<span class="read-receipt" title="Sent">Sent</span>') : '') +
       '</div>' +
       '<div class="message-text">' + message.Message_Text + '</div>' +
     '</div>';
   chatContainer.appendChild(row);
   seenMessageIds.add(parseInt(message.Message_ID));
   scrollToBottom();
+}
+
+function updateReadReceipt(messageId, isRead) {
+  const row = document.querySelector('.message-row[data-message-id="' + messageId + '"]');
+  if (!row) return;
+  const existing = row.querySelector('.read-receipt');
+  if (existing) {
+    existing.className = 'read-receipt ' + (isRead ? 'read' : '');
+    existing.title = isRead ? 'Seen' : 'Sent';
+    existing.textContent = isRead ? 'Seen' : 'Sent';
+  }
 }
 
 function pollMessages() {
@@ -147,6 +186,8 @@ function pollMessages() {
           const id = parseInt(msg.Message_ID);
           if (!seenMessageIds.has(id)) {
             appendMessage(msg);
+          } else if (msg.Sender_ID == authId && msg.read_at) {
+            updateReadReceipt(id, true);
           }
         });
         lastMessageId = data.last_id;
