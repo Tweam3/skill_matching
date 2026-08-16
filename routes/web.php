@@ -35,7 +35,15 @@ Route::get('/pending-verification', function () {
     return view('auth.pending');
 })->name('pending.verification')->middleware('auth');
 
-Route::middleware(['auth', 'verified.user'])->group(function () {
+Route::get('/account/suspended', function () {
+    return view('auth.suspended');
+})->name('account.suspended')->middleware('auth');
+
+Route::get('/account/banned', function () {
+    return view('auth.banned');
+})->name('account.banned')->middleware('auth');
+
+Route::middleware(['auth', 'verified.user', 'user.active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile/{id?}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');

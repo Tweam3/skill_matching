@@ -24,6 +24,15 @@ class AuthController extends Controller
         if (! $user || ! Hash::check($credentials['password'], $user->Password_Hash)) {
             return back()->withErrors(['email' => 'Invalid credentials.']);
         }
+
+        $status = strtolower($user->Account_Status ?? 'active');
+        if ($status === 'suspended') {
+            return back()->withErrors(['email' => 'Your account has been suspended. Please contact support.']);
+        }
+        if ($status === 'banned') {
+            return back()->withErrors(['email' => 'Your account has been banned. Please contact support.']);
+        }
+
         Auth::login($user);
         $request->session()->regenerate();
         if ($user->Is_Verified) {
