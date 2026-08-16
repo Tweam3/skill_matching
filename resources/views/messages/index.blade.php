@@ -32,9 +32,9 @@
               @if ($isActive)
                 <span class="chat-user-online" title="Active conversation"></span>
               @endif
-              <span class="conversation-menu-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('profile.show', $p->profile_slug) }}'" title="View Profile">
+              <a href="{{ route('profile.show', $p->User_ID) }}" class="conversation-menu-btn" title="View Profile" onclick="event.stopPropagation()">
                 <span></span><span></span><span></span>
-              </span>
+              </a>
             </div>
           @endforeach
         </div>
