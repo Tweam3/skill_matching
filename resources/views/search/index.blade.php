@@ -31,6 +31,10 @@
       @endif
 
       <div style="margin-top:16px;">
+        <button type="button" id="toggle-categories" class="btn btn-secondary btn-sm">Show Categories</button>
+      </div>
+
+      <div id="categories-section" style="display:none; margin-top:16px;">
         <strong>Category Tags</strong>
         <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:6px;">
           <label><input type="checkbox" id="select-all-categories"> Select All</label>
@@ -74,7 +78,7 @@
       </div>
 
       <div style="margin-top:16px;">
-        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <button type="submit" class="btn btn-primary">Search</button>
         <a href="{{ route('search.index') }}" class="btn btn-secondary">Reset</a>
       </div>
     </div>
@@ -177,6 +181,20 @@
     var selectAll = document.getElementById('select-all-categories');
     var clearAll = document.getElementById('clear-all-categories');
     var checkboxes = document.querySelectorAll('.category-checkbox');
+    var toggleBtn = document.getElementById('toggle-categories');
+    var categoriesSection = document.getElementById('categories-section');
+
+    if (toggleBtn && categoriesSection) {
+      toggleBtn.addEventListener('click', function () {
+        if (categoriesSection.style.display === 'none') {
+          categoriesSection.style.display = 'block';
+          toggleBtn.textContent = 'Hide Categories';
+        } else {
+          categoriesSection.style.display = 'none';
+          toggleBtn.textContent = 'Show Categories';
+        }
+      });
+    }
 
     selectAll.addEventListener('change', function (e) {
       checkboxes.forEach(function (cb) {

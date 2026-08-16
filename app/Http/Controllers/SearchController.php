@@ -106,6 +106,10 @@ class SearchController extends Controller
                         ->orWhere('Description', 'like', '%'.$keyword.'%')
                         ->orWhereHas('skill', function ($sq) use ($keyword) {
                             $sq->where('Skill_Title', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('user', function ($sq) use ($keyword) {
+                            $sq->where('Full_Name', 'like', '%'.$keyword.'%')
+                                ->orWhere('Email', 'like', '%'.$keyword.'%');
                         });
                 });
             }
@@ -120,6 +124,7 @@ class SearchController extends Controller
             if ($keyword) {
                 $providerQuery->where(function ($q) use ($keyword) {
                     $q->where('Full_Name', 'like', '%'.$keyword.'%')
+                        ->orWhere('Email', 'like', '%'.$keyword.'%')
                         ->orWhereHas('skills', function ($sq) use ($keyword) {
                             $sq->where('Skill_Title', 'like', '%'.$keyword.'%');
                         });
