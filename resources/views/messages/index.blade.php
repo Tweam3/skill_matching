@@ -33,7 +33,7 @@
               @if ($isActive)
                 <span class="chat-user-online" title="Active conversation"></span>
               @endif
-              <span class="conversation-menu-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('profile.show', $p->User_ID) }}'" title="View Profile">
+              <span class="conversation-menu-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('profile.show', $p->profile_slug) }}'" title="View Profile">
                 <span></span><span></span><span></span>
               </span>
             </a>

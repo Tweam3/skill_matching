@@ -37,10 +37,10 @@ Route::get('/pending-verification', function () {
 
 Route::middleware(['auth', 'verified.user'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/profile/{id?}', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/{id}/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/{id}/adjust-picture', [ProfileController::class, 'adjustPicture'])->name('profile.adjustPicture');
+    Route::get('/profile/{slug?}', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/{slug}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/{slug}/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/{slug}/adjust-picture', [ProfileController::class, 'adjustPicture'])->name('profile.adjustPicture');
     Route::post('/profile/skill/add', [ProfileController::class, 'addSkill'])->name('profile.skill.add');
     Route::post('/profile/skill/remove', [ProfileController::class, 'removeSkill'])->name('profile.skill.remove');
     Route::post('/requests/{id}/complete', [RequestController::class, 'complete'])->name('requests.complete');

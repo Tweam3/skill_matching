@@ -54,7 +54,7 @@
     <a href="{{ route('matches.index') }}" class="btn btn-primary">Browse Matches</a>
     <a href="{{ route('messages.index') }}" class="btn btn-secondary">Messages</a>
     <a href="{{ route('reviews.index') }}" class="btn btn-secondary">Reviews</a>
-    <a href="{{ route('profile.show', auth()->id()) }}" class="btn btn-secondary">My Profile</a>
+    <a href="{{ route('profile.show', auth()->user()->profile_slug) }}" class="btn btn-secondary">My Profile</a>
   </div>
 </div>
 @endsection

@@ -5,7 +5,7 @@
   <div class="page-header">
     <h2>Edit Profile</h2>
     <div class="page-header-actions">
-      <a href="{{ route('profile.show', $user->User_ID) }}" class="btn btn-secondary btn-sm">Back to Profile</a>
+      <a href="{{ route('profile.show', $user->profile_slug) }}" class="btn btn-secondary btn-sm">Back to Profile</a>
     </div>
   </div>
 

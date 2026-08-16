@@ -2,7 +2,7 @@
 
 @section('content')
   <div style="margin-bottom:16px;">
-    <a href="{{ route('profile.show', auth()->id()) }}" class="btn btn-secondary btn-sm">← Back to Profile</a>
+    <a href="{{ route('profile.show', auth()->user()->profile_slug) }}" class="btn btn-secondary btn-sm">← Back to Profile</a>
   </div>
   <div class="page-header">
     <h2>Skills</h2>
