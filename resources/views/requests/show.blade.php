@@ -54,16 +54,23 @@
     @endif
 
     @if (auth()->id() !== $request->User_ID)
-      <div style="margin-top:20px; padding:16px; background:#FFF5F5; border-radius:8px; border:1px solid #FECACA;">
-        <h3 style="margin-top:0; color:#991B1B;">Report This Request</h3>
-        <p style="color:#7F1D1D; margin:0 0 12px;">If this request violates community guidelines, you may report it.</p>
-        <button class="btn btn-danger btn-sm" onclick="openRequestReportModal({{ $request->User_ID }}, {{ $request->Request_ID }})" title="Report This Request" style="padding:8px 10px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
-        </button>
+      <div style="margin-top:20px; padding:16px; background:#F0FDF4; border-radius:8px; border:1px solid #BBF7D0;">
+        <h3 style="margin-top:0; color:#065F46;">Actions</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <form method="post" action="{{ route('assignments.apply') }}" style="display:inline;">
+            @csrf
+            <input type="hidden" name="request_id" value="{{ $request->Request_ID }}">
+            <button type="submit" class="btn btn-success btn-sm">Apply</button>
+          </form>
+          <a href="{{ route('messages.index', ['with' => $request->User_ID]) }}" class="btn btn-primary btn-sm">Message</a>
+          <button class="btn btn-danger btn-sm" onclick="openRequestReportModal({{ $request->User_ID }}, {{ $request->Request_ID }})" title="Report This Request" style="padding:8px 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+        </div>
       </div>
     @endif
 

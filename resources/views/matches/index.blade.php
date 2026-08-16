@@ -16,13 +16,8 @@
         <div class="card-subtitle">Requested by {{ $m->request->user->Full_Name }} · {{ $allSkills->pluck('Skill_Title')->join(', ') }} · <span class="badge badge-{{ strtolower(str_replace('-', '', str_replace(' ', '-', $m->request->Service_Mode ?? 'Remote'))) }}">{{ $m->request->Service_Mode ?? 'Remote' }}</span></div>
         <p>Match Score: <strong>{{ $m->Match_Score }}%</strong></p>
         <div style="margin-top:14px;">
-          <form method="post" action="{{ route('assignments.apply') }}" style="display:inline;">
-            @csrf
-            <input type="hidden" name="request_id" value="{{ $m->request->Request_ID }}">
-            <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-          </form>
+          <a href="{{ route('requests.show', $m->request->Request_ID) }}" class="btn btn-primary btn-sm">View Request</a>
           <a href="{{ route('messages.index', ['with' => $m->request->user->User_ID]) }}" class="btn btn-secondary btn-sm">Contact</a>
-          <a href="{{ route('requests.show', $m->request->Request_ID) }}" class="btn btn-secondary btn-sm">View</a>
         </div>
       </div>
     @endforeach
@@ -39,11 +34,7 @@
         <div class="card-title">{{ $a->Title }}</div>
         <div class="card-subtitle">{{ $allSkills->pluck('Skill_Title')->join(', ') }} · by {{ $a->user->Full_Name }} · <span class="badge badge-{{ strtolower(str_replace('-', '', str_replace(' ', '-', $a->Service_Mode ?? 'Remote'))) }}">{{ $a->Service_Mode ?? 'Remote' }}</span></div>
         <div style="margin-top:14px;">
-          <form method="post" action="{{ route('assignments.apply') }}" style="display:inline;">
-            @csrf
-            <input type="hidden" name="request_id" value="{{ $a->Request_ID }}">
-            <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-          </form>
+          <a href="{{ route('requests.show', $a->Request_ID) }}" class="btn btn-primary btn-sm">View Request</a>
         </div>
       </div>
     @endforeach
