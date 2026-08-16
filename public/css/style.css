@@ -656,7 +656,7 @@ a:hover { color:var(--primary-hover); }
   .page-header { flex-direction:column; gap:12px; align-items:flex-start; }
   .cards-grid { grid-template-columns: 1fr; }
   .stat-cards { grid-template-columns: 1fr; }
-  .how-it-works-grid { grid-template-columns: repeat(3, 1fr); gap:10px; }
+  .how-it-works-grid { grid-template-columns: 1fr; gap:14px; }
   .settings-grid { grid-template-columns:1fr; }
   .card { word-wrap: break-word; overflow-wrap: break-word; }
   .card form { flex-wrap: wrap; }
