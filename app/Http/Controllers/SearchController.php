@@ -15,9 +15,7 @@ class SearchController extends Controller
 
     public function index(Request $request)
     {
-        $searchIn = in_array($request->query('search_in'), self::VALID_SEARCH_IN)
-            ? $request->query('search_in')
-            : 'requests';
+        $searchIn = 'both';
 
         $serviceMode = $request->query('service_mode', '');
         $categories = $request->query('categories', []);
@@ -28,7 +26,6 @@ class SearchController extends Controller
         }
 
         $request->validate([
-            'search_in' => ['nullable', 'in:'.implode(',', self::VALID_SEARCH_IN)],
             'service_mode' => ['nullable', 'string', 'in:'.implode(',', self::VALID_SERVICE_MODES)],
             'categories.*' => ['string', 'distinct'],
             'subcategories.*' => ['string', 'distinct'],
@@ -150,7 +147,6 @@ class SearchController extends Controller
         }
 
         return view('search.index', compact(
-            'searchIn',
             'serviceMode',
             'categories',
             'subcategories',

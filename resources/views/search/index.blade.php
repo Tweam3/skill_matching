@@ -2,33 +2,22 @@
 
 @section('content')
 <div class="container">
-  <h2>Search Requests &amp; Providers</h2>
-  <p style="color:var(--muted);margin-bottom:20px;">Find skill requests or browse providers by service mode, category tags, and keywords.</p>
+  <h2>Search</h2>
+  <p style="color:var(--muted);margin-bottom:20px;">Find service requests and skill providers by keyword or category.</p>
 
   <form method="GET" action="{{ route('search.index') }}" style="margin-bottom:24px;">
     <div class="card" style="margin-bottom:16px;">
-      <div>
-        <strong>Search In</strong>
-        <div style="display:flex; gap:12px; margin-top:6px;">
-          <label><input type="radio" name="search_in" value="requests" {{ $searchIn === 'requests' ? 'checked' : '' }}> Service Requests</label>
-          <label><input type="radio" name="search_in" value="providers" {{ $searchIn === 'providers' ? 'checked' : '' }}> Skill Providers</label>
-          <label><input type="radio" name="search_in" value="both" {{ $searchIn === 'both' ? 'checked' : '' }}> Both</label>
-        </div>
-      </div>
-
-      @if (in_array($searchIn, ['requests', 'both']))
-        <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center; margin-top:16px;">
-          <div>
-            <strong>Service Mode</strong>
-            <div style="display:flex; gap:12px; margin-top:6px;">
-              <label><input type="radio" name="service_mode" value="" {{ $serviceMode === '' ? 'checked' : '' }}> All</label>
-              <label><input type="radio" name="service_mode" value="Remote" {{ $serviceMode === 'Remote' ? 'checked' : '' }}> Remote</label>
-              <label><input type="radio" name="service_mode" value="Face-to-Face" {{ $serviceMode === 'Face-to-Face' ? 'checked' : '' }}> Face-to-Face</label>
-              <label><input type="radio" name="service_mode" value="Hybrid" {{ $serviceMode === 'Hybrid' ? 'checked' : '' }}> Hybrid</label>
-            </div>
+      <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center; margin-top:16px;">
+        <div>
+          <strong>Service Mode</strong>
+          <div style="display:flex; gap:12px; margin-top:6px;">
+            <label><input type="radio" name="service_mode" value="" {{ $serviceMode === '' ? 'checked' : '' }}> All</label>
+            <label><input type="radio" name="service_mode" value="Remote" {{ $serviceMode === 'Remote' ? 'checked' : '' }}> Remote</label>
+            <label><input type="radio" name="service_mode" value="Face-to-Face" {{ $serviceMode === 'Face-to-Face' ? 'checked' : '' }}> Face-to-Face</label>
+            <label><input type="radio" name="service_mode" value="Hybrid" {{ $serviceMode === 'Hybrid' ? 'checked' : '' }}> Hybrid</label>
           </div>
         </div>
-      @endif
+      </div>
 
       <div style="margin-top:16px;">
         <button type="button" id="toggle-categories" class="btn btn-secondary btn-sm">Show Categories</button>
@@ -74,7 +63,7 @@
 
       <div style="margin-top:16px;">
         <strong>Keyword</strong>
-        <input type="text" name="keyword" value="{{ $keyword }}" placeholder="Search by title, description, or skill name…" style="padding:8px;border-radius:6px;border:1px solid #ddd;width:100%;max-width:400px;">
+        <input type="text" name="keyword" value="{{ $keyword }}" placeholder="Search by title, description, skill, or name…" style="padding:8px;border-radius:6px;border:1px solid #ddd;width:100%;max-width:400px;">
       </div>
 
       <div style="margin-top:16px;">
@@ -84,94 +73,86 @@
     </div>
   </form>
 
-  @if (in_array($searchIn, ['requests', 'both']))
-    <h3 style="margin-bottom:12px;">Service Requests</h3>
-    <div>
-      @if ($results->isEmpty())
-        <div class="alert alert-info">No requests match your filters.</div>
-      @else
-        <div class="cards-grid">
-          @foreach ($results as $r)
-            @php $allSkills = $r->skills->merge([$r->skill])->unique('Skill_ID')->values(); @endphp
-            <div class="card">
-              <div class="card-title">{{ $r->Title }}</div>
-              <div class="card-subtitle">
-                {{ $allSkills->pluck('Skill_Title')->join(', ') }}
-                · <span class="badge badge-{{ strtolower(str_replace('-', '', str_replace(' ', '-', $r->Service_Mode ?? 'Remote'))) }}">
-                  {{ $r->Service_Mode ?? 'Remote' }}
-                </span>
-              </div>
-              @if ($r->skill && $r->skill->Subcategory)
-                <span class="badge badge-open" style="font-size:0.7rem; margin-top:4px; display:inline-block;">{{ $r->skill->Subcategory }}</span>
-              @endif
-              <p>{{ \Illuminate\Support\Str::limit($r->Description, 120) }}</p>
-              <div style="margin-top:10px;">
-                <span class="badge badge-{{ strtolower($r->Status) }}">{{ $r->Status }}</span>
-                <span style="color:var(--muted);font-size:0.85rem;">by {{ $r->user->Full_Name ?? 'N/A' }}</span>
-              </div>
-              <div style="margin-top:14px;">
-                <a href="{{ route('requests.show', $r->Request_ID) }}" class="btn btn-secondary btn-sm">View</a>
-              </div>
+  @if ($results->isEmpty() && $providers->isEmpty())
+    <div class="alert alert-info">Found Nothing Try Again Later</div>
+  @else
+    @if (! $results->isEmpty())
+      <h3 style="margin-bottom:12px;">Service Requests</h3>
+      <div class="cards-grid">
+        @foreach ($results as $r)
+          @php $allSkills = $r->skills->merge([$r->skill])->unique('Skill_ID')->values(); @endphp
+          <div class="card">
+            <div class="card-title">{{ $r->Title }}</div>
+            <div class="card-subtitle">
+              {{ $allSkills->pluck('Skill_Title')->join(', ') }}
+              · <span class="badge badge-{{ strtolower(str_replace('-', '', str_replace(' ', '-', $r->Service_Mode ?? 'Remote'))) }}">
+                {{ $r->Service_Mode ?? 'Remote' }}
+              </span>
             </div>
-          @endforeach
-        </div>
-        {{ $results->links('pagination::bootstrap-4') }}
-      @endif
-    </div>
-  @endif
+            @if ($r->skill && $r->skill->Subcategory)
+              <span class="badge badge-open" style="font-size:0.7rem; margin-top:4px; display:inline-block;">{{ $r->skill->Subcategory }}</span>
+            @endif
+            <p>{{ \Illuminate\Support\Str::limit($r->Description, 120) }}</p>
+            <div style="margin-top:10px;">
+              <span class="badge badge-{{ strtolower($r->Status) }}">{{ $r->Status }}</span>
+              <span style="color:var(--muted);font-size:0.85rem;">by {{ $r->user->Full_Name ?? 'N/A' }}</span>
+            </div>
+            <div style="margin-top:14px;">
+              <a href="{{ route('requests.show', $r->Request_ID) }}" class="btn btn-secondary btn-sm">View</a>
+            </div>
+          </div>
+        @endforeach
+      </div>
+      {{ $results->links('pagination::bootstrap-4') }}
+    @endif
 
-  @if (in_array($searchIn, ['providers', 'both']))
-    <h3 style="margin:24px 0 12px;">Skill Providers</h3>
-    <div>
-      @if ($providers->isEmpty())
-        <div class="alert alert-info">No providers match your filters.</div>
-      @else
-        <div class="cards-grid">
-          @foreach ($providers as $p)
-            @php $userSkills = $p->skills; @endphp
-            <div class="card">
-              <div class="card-title">{{ $p->Full_Name }}</div>
-              <div class="card-subtitle">
-                @if ($userSkills->isNotEmpty())
-                  {{ $userSkills->pluck('Skill_Title')->join(', ') }}
-                @else
-                  <span style="color:var(--muted);">No skills listed</span>
-                @endif
-              </div>
-              <div style="margin:8px 0;">
-                <div style="font-size:0.85rem; color:var(--muted);">
-                  Rating: {{ number_format((float)$p->Avg_Rating, 2) }}/5 ·
-                  Completed: {{ $p->Total_Completed }} ·
-                  {{ $p->Is_Verified ? 'Verified' : 'Unverified' }}
-                </div>
-                @if ($p->Is_Verified)
-                  <div style="display:flex;gap:4px;margin-top:4px;">
-                    <span class="badge badge-accepted">Verified</span>
-                  </div>
-                @endif
-              </div>
-              <div style="margin-top:8px;">
-                @if ($userSkills->isNotEmpty())
-                  @foreach ($userSkills->take(4) as $s)
-                    <span class="badge badge-open" style="font-size:0.7rem;">{{ $s->Skill_Title }}</span>
-                  @endforeach
-                  @if ($userSkills->count() > 4)
-                    <span class="badge" style="font-size:0.7rem;">+{{ $userSkills->count() - 4 }} more</span>
-                  @endif
-                @endif
-              </div>
-              <div style="margin-top:14px;">
-                <a href="{{ route('profile.show', $p->User_ID) }}" class="btn btn-secondary btn-sm">View Profile</a>
-                @if (Auth::check() && Auth::id() !== $p->User_ID)
-                  <a href="{{ route('messages.index', ['with' => $p->User_ID]) }}" class="btn btn-primary btn-sm">Message</a>
-                @endif
-              </div>
+    @if (! $providers->isEmpty())
+      <h3 style="margin:24px 0 12px;">Skill Providers</h3>
+      <div class="cards-grid">
+        @foreach ($providers as $p)
+          @php $userSkills = $p->skills; @endphp
+          <div class="card">
+            <div class="card-title">{{ $p->Full_Name }}</div>
+            <div class="card-subtitle">
+              @if ($userSkills->isNotEmpty())
+                {{ $userSkills->pluck('Skill_Title')->join(', ') }}
+              @else
+                <span style="color:var(--muted);">No skills listed</span>
+              @endif
             </div>
-          @endforeach
-        </div>
-        {{ $providers->links('pagination::bootstrap-4') }}
-      @endif
-    </div>
+            <div style="margin:8px 0;">
+              <div style="font-size:0.85rem; color:var(--muted);">
+                Rating: {{ number_format((float)$p->Avg_Rating, 2) }}/5 ·
+                Completed: {{ $p->Total_Completed }} ·
+                {{ $p->Is_Verified ? 'Verified' : 'Unverified' }}
+              </div>
+              @if ($p->Is_Verified)
+                <div style="display:flex;gap:4px;margin-top:4px;">
+                  <span class="badge badge-accepted">Verified</span>
+                </div>
+              @endif
+            </div>
+            <div style="margin-top:8px;">
+              @if ($userSkills->isNotEmpty())
+                @foreach ($userSkills->take(4) as $s)
+                  <span class="badge badge-open" style="font-size:0.7rem;">{{ $s->Skill_Title }}</span>
+                @endforeach
+                @if ($userSkills->count() > 4)
+                  <span class="badge" style="font-size:0.7rem;">+{{ $userSkills->count() - 4 }} more</span>
+                @endif
+              @endif
+            </div>
+            <div style="margin-top:14px;">
+              <a href="{{ route('profile.show', $p->User_ID) }}" class="btn btn-secondary btn-sm">View Profile</a>
+              @if (Auth::check() && Auth::id() !== $p->User_ID)
+                <a href="{{ route('messages.index', ['with' => $p->User_ID]) }}" class="btn btn-primary btn-sm">Message</a>
+              @endif
+            </div>
+          </div>
+        @endforeach
+      </div>
+      {{ $providers->links('pagination::bootstrap-4') }}
+    @endif
   @endif
 </div>
 
