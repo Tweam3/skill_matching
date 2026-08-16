@@ -811,32 +811,32 @@ input:checked + .toggle-slider { background-color:var(--primary); }
 input:checked + .toggle-slider:before { transform:translateX(24px); }
 
 [data-theme="dark"] {
-  --bg: #0F172A;
-  --surface: #1E293B;
-  --text: #F1F5F9;
-  --muted: #94A3B8;
-  --primary: #60A5FA;
-  --primary-hover: #3B82F6;
-  --blue-light: #1E3A8A;
-  --gold-bg: #422006;
-  --secondary-bg: #1E3A8A;
-  --warning-bg: #422006;
-  --warning-text: #FCD34D;
-  --suspended-bg: #431407;
-  --suspended-text: #FDBA74;
-  --banned-bg: #450A0A;
-  --banned-text: #FCA5A5;
+  --bg: #1b1e24;
+  --surface: #23262e;
+  --text: #d4d4d8;
+  --muted: #9ca3af;
+  --primary: #6cb6ff;
+  --primary-hover: #4a9eff;
+  --blue-light: #2a2f3a;
+  --gold-bg: #3a3220;
+  --secondary-bg: #2a2f3a;
+  --warning-bg: #3a3220;
+  --warning-text: #fcd34d;
+  --suspended-bg: #3d2a1a;
+  --suspended-text: #fdba74;
+  --banned-bg: #3d1f1f;
+  --banned-text: #fca5a5;
 }
 [data-theme="dark"] body { background:var(--bg); color:var(--text); }
-[data-theme="dark"] .card { background:var(--surface); border-color:#334155; }
+[data-theme="dark"] .card { background:var(--surface); border-color:#2e323a; }
 [data-theme="dark"] .form-group input,
 [data-theme="dark"] .form-group select,
-[data-theme="dark"] .form-group textarea { background:#0F172A; color:var(--text); border-color:#334155; }
-[data-theme="dark"] .navbar { background:var(--surface); border-bottom:1px solid #334155; }
+[data-theme="dark"] .form-group textarea { background:#1b1e24; color:var(--text); border-color:#2e323a; }
+[data-theme="dark"] .navbar { background:var(--surface); border-bottom:1px solid #2e323a; }
 [data-theme="dark"] .navbar-brand { color:var(--text); }
 [data-theme="dark"] .navbar-links a { color:var(--muted); }
 [data-theme="dark"] .navbar-links a:hover { color:var(--text); }
-[data-theme="dark"] .btn-secondary { background:#334155; color:var(--text); border:1px solid #475569; }
-[data-theme="dark"] .alert { border-color:#334155; }
+[data-theme="dark"] .btn-secondary { background:#2e323a; color:var(--text); border:1px solid #3a3f4a; }
+[data-theme="dark"] .alert { border-color:#2e323a; }
 [data-theme="dark"] .settings-sidebar-item { color:var(--text); }
 [data-theme="dark"] .settings-sidebar-item:hover, [data-theme="dark"] .settings-sidebar-item.active { background:var(--blue-light); color:var(--primary); }

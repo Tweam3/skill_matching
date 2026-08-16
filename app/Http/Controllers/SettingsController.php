@@ -28,11 +28,12 @@ class SettingsController extends Controller
         ]);
 
         $current = $user->settings ?? [];
+        $validated['dark_mode'] = $request->has('dark_mode');
         $current = array_merge($current, $validated);
         $user->settings = $current;
         $user->save();
 
-        if ($validated['dark_mode'] ?? false) {
+        if ($current['dark_mode']) {
             session()->put('dark_mode', true);
         } else {
             session()->forget('dark_mode');

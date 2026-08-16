@@ -48,7 +48,7 @@
               <div style="color:var(--muted); font-size:0.9rem;">Switch between light and dark theme</div>
             </div>
             <label class="toggle-switch">
-              <input type="checkbox" name="dark_mode" value="1" {{ !empty($settings['dark_mode']) ? 'checked' : '' }}>
+              <input type="checkbox" name="dark_mode" value="1" {{ !empty($settings['dark_mode']) ? 'checked' : '' }} onchange="applyDarkMode(this.checked)">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -101,6 +101,17 @@
 
 @push('scripts')
 <script>
+function applyDarkMode(checked) {
+  var html = document.documentElement;
+  if (checked) {
+    html.setAttribute('data-theme', 'dark');
+    localStorage.setItem('dark_mode', '1');
+  } else {
+    html.removeAttribute('data-theme');
+    localStorage.removeItem('dark_mode');
+  }
+}
+
 function switchSettingsTab(event, tabId) {
   event.preventDefault();
   document.querySelectorAll('.settings-section').forEach(function(el) {
