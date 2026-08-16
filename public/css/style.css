@@ -802,3 +802,41 @@ a:hover { color:var(--primary-hover); }
   display:inline-flex; align-items:center; gap:6px; background:var(--blue-light); color:var(--primary);
   padding:5px 10px; border-radius:20px; font-size:0.85rem; font-weight:600;
 }
+
+.toggle-switch { position:relative; display:inline-block; width:48px; height:24px; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#CBD5E1; transition:0.3s; border-radius:24px; }
+.toggle-slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:#fff; transition:0.3s; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+input:checked + .toggle-slider { background-color:var(--primary); }
+input:checked + .toggle-slider:before { transform:translateX(24px); }
+
+[data-theme="dark"] {
+  --bg: #0F172A;
+  --surface: #1E293B;
+  --text: #F1F5F9;
+  --muted: #94A3B8;
+  --primary: #60A5FA;
+  --primary-hover: #3B82F6;
+  --blue-light: #1E3A8A;
+  --gold-bg: #422006;
+  --secondary-bg: #1E3A8A;
+  --warning-bg: #422006;
+  --warning-text: #FCD34D;
+  --suspended-bg: #431407;
+  --suspended-text: #FDBA74;
+  --banned-bg: #450A0A;
+  --banned-text: #FCA5A5;
+}
+[data-theme="dark"] body { background:var(--bg); color:var(--text); }
+[data-theme="dark"] .card { background:var(--surface); border-color:#334155; }
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea { background:#0F172A; color:var(--text); border-color:#334155; }
+[data-theme="dark"] .navbar { background:var(--surface); border-bottom:1px solid #334155; }
+[data-theme="dark"] .navbar-brand { color:var(--text); }
+[data-theme="dark"] .navbar-links a { color:var(--muted); }
+[data-theme="dark"] .navbar-links a:hover { color:var(--text); }
+[data-theme="dark"] .btn-secondary { background:#334155; color:var(--text); border:1px solid #475569; }
+[data-theme="dark"] .alert { border-color:#334155; }
+[data-theme="dark"] .settings-sidebar-item { color:var(--text); }
+[data-theme="dark"] .settings-sidebar-item:hover, [data-theme="dark"] .settings-sidebar-item.active { background:var(--blue-light); color:var(--primary); }

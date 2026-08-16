@@ -33,6 +33,7 @@ class User extends Authenticatable
         'Account_Status',
         'Warning_Count',
         'Rejection_Reason',
+        'settings',
     ];
 
     protected $hidden = [
@@ -43,6 +44,7 @@ class User extends Authenticatable
     protected $casts = [
         'Is_Verified' => 'boolean',
         'Created_At' => 'datetime',
+        'settings' => 'array',
     ];
 
     protected $appends = ['name'];

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" @auth data-theme="{{ auth()->user()->settings['dark_mode'] ?? false ? 'dark' : 'light' }}" @endauth>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

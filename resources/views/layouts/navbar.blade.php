@@ -19,7 +19,7 @@
         <li><a href="{{ route('admin.analytics') }}">Analytics</a></li>
       @endif
       <li><a href="{{ route('profile.show', auth()->id()) }}">Profile</a></li>
-      <li><a href="{{ route('profile.edit', auth()->id()) }}">Settings</a></li>
+      <li><a href="{{ route('settings.index') }}">Settings</a></li>
       <li>
         <form method="POST" action="{{ route('logout') }}" style="display:inline;">
           @csrf
