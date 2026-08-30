@@ -146,7 +146,7 @@ class AnalyticsService
             $results = DB::table('skills as s')
                 ->join('skill_requests as r', 's.Skill_ID', '=', 'r.Skill_ID')
                 ->selectRaw('s."Category", COUNT(*) as request_count')
-                ->groupBy('s."Category"')
+                ->groupByRaw('s."Category"')
                 ->orderByDesc('request_count')
                 ->limit($limit)
                 ->get();
