@@ -43,8 +43,8 @@
           </div>
         </form>
 
-        <div id="picture-preview-area" style="display:none; margin-top:16px;">
-          <div style="position:relative; width:260px; height:260px; overflow:hidden; border-radius:50%; border:3px solid var(--primary); margin:0 auto; background:#f3f4f6; cursor:grab;">
+  <div id="picture-preview-area" style="display:none; margin-top:16px;">
+    <div style="position:relative; width:260px; height:260px; overflow:hidden; border-radius:50%; border:3px solid var(--primary); margin:0 auto; background:#f3f4f6; cursor:grab; touch-action:none;">
             <img id="preview-img" src="" alt="Preview" style="position:absolute; left:0; top:0; transform-origin:0 0; user-select:none; pointer-events:none;">
           </div>
           <div style="margin-top:16px; display:flex; flex-direction:column; gap:10px; align-items:center;">
@@ -197,8 +197,18 @@ function clampPan() {
   const h = previewImg.naturalHeight * scale;
   const boxW = previewBox.clientWidth;
   const boxH = previewBox.clientHeight;
-  panX = Math.min(0, Math.max(panX, boxW - w));
-  panY = Math.min(0, Math.max(panY, boxH - h));
+
+  if (w > boxW) {
+    panX = Math.min(0, Math.max(panX, boxW - w));
+  } else {
+    panX = (boxW - w) / 2;
+  }
+
+  if (h > boxH) {
+    panY = Math.min(0, Math.max(panY, boxH - h));
+  } else {
+    panY = (boxH - h) / 2;
+  }
 }
 
 if (fileInput) {
@@ -265,6 +275,16 @@ if (previewBox) {
     startY = e.clientY - panY;
     previewBox.style.cursor = 'grabbing';
   });
+
+  previewBox.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      isDragging = true;
+      startX = e.touches[0].clientX - panX;
+      startY = e.touches[0].clientY - panY;
+      previewBox.style.cursor = 'grabbing';
+    }
+  }, { passive: false });
 }
 
 window.addEventListener('mousemove', (e) => {
@@ -275,7 +295,21 @@ window.addEventListener('mousemove', (e) => {
   updateTransform();
 });
 
+window.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  e.preventDefault();
+  panX = e.touches[0].clientX - startX;
+  panY = e.touches[0].clientY - startY;
+  clampPan();
+  updateTransform();
+}, { passive: false });
+
 window.addEventListener('mouseup', () => {
+  isDragging = false;
+  if (previewBox) previewBox.style.cursor = 'grab';
+});
+
+window.addEventListener('touchend', () => {
   isDragging = false;
   if (previewBox) previewBox.style.cursor = 'grab';
 });
