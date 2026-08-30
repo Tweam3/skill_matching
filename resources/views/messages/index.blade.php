@@ -29,9 +29,6 @@
                 <div class="conversation-name">{{ $p->Full_Name }}</div>
                 <div class="conversation-preview">Click to view conversation</div>
               </div>
-              @if ($isActive)
-                <span class="chat-user-online" title="Active conversation"></span>
-              @endif
               @if ($p->User_ID !== auth()->id())
                 <a href="/profile/{{ $p->User_ID }}" class="conversation-menu-btn" title="View Profile" onclick="event.stopPropagation()">
                   <span></span><span></span><span></span>
@@ -70,7 +67,7 @@
           @endif
           <div style="flex:1;">
             <div class="chat-header-name">{{ $partnerName }}</div>
-            <div class="chat-header-sub">Online</div>
+            <div class="chat-header-sub">Chat</div>
           </div>
         </div>
 
