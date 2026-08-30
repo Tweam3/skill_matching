@@ -177,8 +177,10 @@ class AnalyticsService
             default => "DATE_FORMAT(Created_At, '%Y-%m')",
         };
 
+        $ratingColumn = $driver === 'pgsql' ? '"Rating"' : 'Rating';
+
         $rawData = DB::table('reviews')
-            ->selectRaw("{$monthExpr} as month, AVG(Rating) as avg_rating")
+            ->selectRaw("{$monthExpr} as month, AVG({$ratingColumn}) as avg_rating")
             ->where('Created_At', '>=', $since)
             ->groupBy('month')
             ->pluck('avg_rating', 'month')
