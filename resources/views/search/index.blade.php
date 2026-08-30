@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
   <h2>Search</h2>
-  <p style="color:var(--muted);margin-bottom:20px;">Find service requests and skill providers by keyword or category.</p>
+  <p style="color:var(--muted);margin-bottom:20px;">Find service requests and skill providers by search or category.</p>
 
   <form method="GET" action="{{ route('search.index') }}" style="margin-bottom:24px;">
     <div class="card" style="margin-bottom:16px;">
@@ -62,7 +62,7 @@
       @endif
 
       <div style="margin-top:16px;">
-        <strong>Keyword</strong>
+        <strong>Search</strong>
         <input type="text" name="keyword" value="{{ $keyword }}" placeholder="Search by title, description, skill, or name…" style="padding:8px;border-radius:6px;border:1px solid #ddd;width:100%;max-width:400px;">
       </div>
 

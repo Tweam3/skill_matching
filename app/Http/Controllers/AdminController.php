@@ -96,7 +96,7 @@ class AdminController extends Controller
         $uid = $request->user_id;
         $user = User::findOrFail($uid);
         if ($request->decision === 'approve') {
-            $user->update(['Is_Verified' => true, 'Rejection_Reason' => null]);
+            $user->update(['Is_Verified' => true, 'Rejection_Reason' => null, 'Account_Status' => 'Active']);
             Notification::create([
                 'User_ID' => $uid,
                 'Notif_Type' => 'Verification',
