@@ -3,6 +3,7 @@
 namespace App\Services\Analytics;
 
 use App\Models\Assignment;
+use App\Models\Review;
 use App\Models\Skill;
 use App\Models\SkillRequest;
 use App\Models\User;
@@ -117,6 +118,84 @@ class AnalyticsService
     }
 
     /**
+     * Most active service providers — users with the highest number of
+     * completed transactions.
+     */
+    public function mostActiveProviders(int $limit = 5): Collection
+    {
+        return User::query()
+            ->where('Role', 'Student')
+            ->where('Account_Status', 'Active')
+            ->where('Total_Completed', '>', 0)
+            ->orderByDesc('Total_Completed')
+            ->orderByDesc('Avg_Rating')
+            ->limit($limit)
+            ->with('skills')
+            ->get();
+    }
+
+    /**
+     * Most requested skill categories — categories with the highest number
+     * of service requests.
+     */
+    public function mostRequestedSkillCategories(int $limit = 5): Collection
+    {
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            $results = DB::table('skills as s')
+                ->join('skill_requests as r', 's.Skill_ID', '=', 'r.Skill_ID')
+                ->selectRaw('s."Category", COUNT(*) as request_count')
+                ->groupBy('s."Category"')
+                ->orderByDesc('request_count')
+                ->limit($limit)
+                ->get();
+        } else {
+            $results = DB::table('skills as s')
+                ->join('skill_requests as r', 's.Skill_ID', '=', 'r.Skill_ID')
+                ->selectRaw('s.Category, COUNT(*) as request_count')
+                ->groupBy('s.Category')
+                ->orderByDesc('request_count')
+                ->limit($limit)
+                ->get();
+        }
+
+        return $results;
+    }
+
+    /**
+     * Average user rating trend — monthly average rating over the last
+     * $months periods, computed from submitted reviews.
+     */
+    public function averageUserRatingTrend(int $months = 12): array
+    {
+        $since = now()->subMonths($months)->startOfMonth();
+        $driver = DB::connection()->getDriverName();
+        $monthExpr = match ($driver) {
+            'sqlite' => "strftime('%Y-%m', Created_At)",
+            'pgsql' => "to_char(\"Created_At\", 'YYYY-MM')",
+            default => "DATE_FORMAT(Created_At, '%Y-%m')",
+        };
+
+        $rawData = DB::table('reviews')
+            ->selectRaw("{$monthExpr} as month, AVG(Rating) as avg_rating")
+            ->where('Created_At', '>=', $since)
+            ->groupBy('month')
+            ->pluck('avg_rating', 'month')
+            ->toArray();
+
+        $labels = [];
+        $data = [];
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $key = now()->subMonths($i)->format('Y-m');
+            $labels[] = now()->subMonths($i)->format('M Y');
+            $data[] = isset($rawData[$key]) ? round((float) $rawData[$key], 2) : null;
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    /**
      * Aggregate all KPIs into a single payload for the dashboard view.
      */
     public function allMetrics(): array
@@ -137,6 +216,9 @@ class AnalyticsService
             ],
             'completion_rate_by_category' => $this->completionRateByCategory(),
             'active_provider_count' => $this->activeProviderCount(),
+            'most_active_providers' => $this->mostActiveProviders(),
+            'most_requested_categories' => $this->mostRequestedSkillCategories(),
+            'average_rating_trend' => $this->averageUserRatingTrend($months),
             'total_requests' => SkillRequest::count(),
             'total_providers' => User::where('Role', 'Student')->where('Account_Status', 'Active')->count(),
             'total_assignments' => Assignment::count(),

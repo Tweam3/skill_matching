@@ -13,6 +13,10 @@ class Recommender
 
     public const WEIGHT_CATEGORY = 'category_coverage';
 
+    public const WEIGHT_SERVICE_MODE = 'service_mode';
+
+    public const WEIGHT_PROFILE_TAGS = 'profile_tags';
+
     public const WEIGHT_RATING = 'rating';
 
     public const WEIGHT_PROFILE = 'profile_quality';
@@ -34,10 +38,12 @@ class Recommender
         $config = $config ?? config('matching') ?? [];
 
         $this->weights = $config['weights'] ?? [
-            self::WEIGHT_SKILL => 0.40,
-            self::WEIGHT_CATEGORY => 0.25,
-            self::WEIGHT_RATING => 0.20,
-            self::WEIGHT_PROFILE => 0.15,
+            self::WEIGHT_SKILL => 0.30,
+            self::WEIGHT_CATEGORY => 0.20,
+            self::WEIGHT_SERVICE_MODE => 0.15,
+            self::WEIGHT_PROFILE_TAGS => 0.15,
+            self::WEIGHT_RATING => 0.12,
+            self::WEIGHT_PROFILE => 0.08,
         ];
 
         $this->minMatchScore = $config['min_match_score'] ?? 15.0;
@@ -62,13 +68,16 @@ class Recommender
         $requested = $this->extractRequestSkills($request);
         $providerSkillIds = $provider->skills->pluck('Skill_ID')->all();
         $providerCategories = $provider->skills->pluck('Category')->filter()->unique()->values()->all();
+        $providerProficiencyMap = $provider->skills->pluck('pivot.Proficiency', 'Skill_ID')->all();
 
         $skillOverlap = $this->skillOverlapScore($requested['skill_ids'], $providerSkillIds);
         $categoryCoverage = $this->categoryCoverageScore($requested['categories'], $providerCategories);
+        $serviceMode = $this->serviceModeScore($request, $provider);
+        $profileTags = $this->profileTagsScore($requested['skill_ids'], $providerProficiencyMap);
         $rating = $this->ratingScore($provider);
         $profileQuality = $this->profileQualityScore($provider);
 
-        $rawScore = $this->weightedScore($skillOverlap, $categoryCoverage, $rating, $profileQuality);
+        $rawScore = $this->weightedScore($skillOverlap, $categoryCoverage, $serviceMode, $profileTags, $rating, $profileQuality);
 
         return [
             'user' => $provider,
@@ -77,6 +86,8 @@ class Recommender
             'breakdown' => [
                 'skill_overlap' => round($skillOverlap, 4),
                 'category_coverage' => round($categoryCoverage, 4),
+                'service_mode' => round($serviceMode, 4),
+                'profile_tags' => round($profileTags, 4),
                 'rating' => round($rating, 4),
                 'profile_quality' => round($profileQuality, 4),
             ],
@@ -329,24 +340,89 @@ class Recommender
     }
 
     /**
+     * Service mode compatibility between request and provider.
+     *
+     * Returns 1.0 if the provider offers the requested service mode,
+     * 0.5 if the provider has not configured service modes (legacy data),
+     * and 0.0 otherwise. Hybrid requests are compatible with providers
+     * offering Remote or Face-to-Face.
+     */
+    protected function serviceModeScore(SkillRequest $request, User $provider): float
+    {
+        $requestMode = $request->Service_Mode;
+
+        if (! $requestMode) {
+            return 0.5;
+        }
+
+        $providerModes = $provider->Service_Modes;
+
+        if (empty($providerModes)) {
+            return 0.5;
+        }
+
+        if (in_array($requestMode, $providerModes, true)) {
+            return 1.0;
+        }
+
+        if ($requestMode === 'Hybrid') {
+            $hasRemote = in_array('Remote', $providerModes, true);
+            $hasF2F = in_array('Face-to-Face', $providerModes, true);
+
+            if ($hasRemote || $hasF2F) {
+                return 1.0;
+            }
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Profile tag matching: proportion of requested skills that the provider
+     * has with at least Competent proficiency (level 3 or higher).
+     */
+    protected function profileTagsScore(array $requestedSkillIds, array $providerProficiencyMap): float
+    {
+        if (empty($requestedSkillIds)) {
+            return 0.0;
+        }
+
+        $taggedCount = 0;
+
+        foreach ($requestedSkillIds as $skillId) {
+            $proficiency = $providerProficiencyMap[$skillId] ?? 0;
+
+            if ($proficiency >= 3) {
+                $taggedCount++;
+            }
+        }
+
+        return $taggedCount / count($requestedSkillIds);
+    }
+
+    /**
      * Combine all dimension scores using configured weights.
      */
-    protected function weightedScore(float $skill, float $category, float $rating, float $profile): float
+    protected function weightedScore(float $skill, float $category, float $serviceMode, float $profileTags, float $rating, float $profile): float
     {
         $weights = $this->weights;
 
-        $total = $weights[self::WEIGHT_SKILL]
-            + $weights[self::WEIGHT_CATEGORY]
-            + $weights[self::WEIGHT_RATING]
-            + $weights[self::WEIGHT_PROFILE];
+        $total = ($weights[self::WEIGHT_SKILL] ?? 0)
+            + ($weights[self::WEIGHT_CATEGORY] ?? 0)
+            + ($weights[self::WEIGHT_SERVICE_MODE] ?? 0)
+            + ($weights[self::WEIGHT_PROFILE_TAGS] ?? 0)
+            + ($weights[self::WEIGHT_RATING] ?? 0)
+            + ($weights[self::WEIGHT_PROFILE] ?? 0);
 
         if ($total <= 0) {
             return 0.0;
         }
 
-        return ($skill * $weights[self::WEIGHT_SKILL]
-            + $category * $weights[self::WEIGHT_CATEGORY]
-            + $rating * $weights[self::WEIGHT_RATING]
-            + $profile * $weights[self::WEIGHT_PROFILE]) / $total;
+        return (($skill * ($weights[self::WEIGHT_SKILL] ?? 0))
+            + ($category * ($weights[self::WEIGHT_CATEGORY] ?? 0))
+            + ($serviceMode * ($weights[self::WEIGHT_SERVICE_MODE] ?? 0))
+            + ($profileTags * ($weights[self::WEIGHT_PROFILE_TAGS] ?? 0))
+            + ($rating * ($weights[self::WEIGHT_RATING] ?? 0))
+            + ($profile * ($weights[self::WEIGHT_PROFILE] ?? 0))) / $total;
     }
 }

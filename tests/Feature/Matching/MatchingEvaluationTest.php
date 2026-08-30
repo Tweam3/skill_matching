@@ -60,9 +60,16 @@ class MatchingEvaluationTest extends TestCase
             'Total_Completed' => 0,
             'Account_Status' => 'Active',
             'Warning_Count' => 0,
+            'Service_Modes' => ['Remote', 'Face-to-Face', 'Hybrid'],
         ], $profile));
 
         $user->skills()->attach($skillIds);
+
+        foreach ($skillIds as $skillId) {
+            \App\Models\UserSkill::where('User_ID', $user->User_ID)
+                ->where('Skill_ID', $skillId)
+                ->update(['Proficiency' => 4]);
+        }
 
         return $user;
     }
@@ -75,6 +82,7 @@ class MatchingEvaluationTest extends TestCase
             'Title' => $title,
             'Description' => 'Description for '.$title,
             'Status' => 'Open',
+            'Service_Mode' => 'Remote',
         ]);
         $request->skills()->attach($skillIds);
 
@@ -323,5 +331,100 @@ class MatchingEvaluationTest extends TestCase
         $matches = UserMatch::where('Request_ID', $request->Request_ID)->get();
         $this->assertNotEmpty($matches);
         $this->assertGreaterThan(15, $matches->min('Match_Score'));
+    }
+
+    public function test_recommender_achieves_precision_at_five_target(): void
+    {
+        $admin = User::create([
+            'Full_Name' => 'Admin User',
+            'Email' => 'admin-p5@test.com',
+            'Password_Hash' => 'admin_hash',
+            'Role' => 'Admin',
+            'Is_Verified' => true,
+            'Avg_Rating' => 0,
+            'Total_Completed' => 0,
+            'Account_Status' => 'Active',
+            'Warning_Count' => 0,
+            'Service_Modes' => ['Remote', 'Face-to-Face', 'Hybrid'],
+        ]);
+
+        $request = SkillRequest::create([
+            'User_ID' => $admin->User_ID,
+            'Skill_ID' => 1,
+            'Title' => 'PHP and JavaScript Help',
+            'Description' => 'Need help with PHP and JavaScript',
+            'Status' => 'Open',
+            'Service_Mode' => 'Remote',
+            'Created_At' => now(),
+        ]);
+        $request->skills()->attach([1, 2]);
+
+        $successfulIds = [];
+        for ($i = 2; $i <= 6; $i++) {
+            $provider = User::create([
+                'Full_Name' => "Success Provider {$i}",
+                'Email' => "success{$i}@test.com",
+                'Password_Hash' => 'fake_hash',
+                'Role' => 'Student',
+                'Is_Verified' => true,
+                'Avg_Rating' => 4.8,
+                'Total_Completed' => 5,
+                'Account_Status' => 'Active',
+                'Warning_Count' => 0,
+                'Service_Modes' => ['Remote', 'Face-to-Face', 'Hybrid'],
+            ]);
+            $provider->skills()->attach([1, 2]);
+            \App\Models\UserSkill::where('User_ID', $provider->User_ID)
+                ->whereIn('Skill_ID', [1, 2])
+                ->update(['Proficiency' => 4]);
+            $successfulIds[] = $provider->User_ID;
+
+            Assignment::create([
+                'Request_ID' => $request->Request_ID,
+                'User_ID' => $provider->User_ID,
+                'Status' => 'Accepted',
+                'Created_At' => now(),
+                'Responded_At' => now(),
+                'Status_Updated_At' => now(),
+                'Completed_At' => now(),
+            ]);
+            Review::create([
+                'Reviewed_User_ID' => $provider->User_ID,
+                'Reviewer_ID' => $admin->User_ID,
+                'Request_ID' => $request->Request_ID,
+                'Rating' => 5,
+                'Comment' => 'Great work!',
+                'Created_At' => now(),
+            ]);
+        }
+
+        for ($i = 7; $i <= 9; $i++) {
+            $weak = User::create([
+                'Full_Name' => "Weak Provider {$i}",
+                'Email' => "weak{$i}@test.com",
+                'Password_Hash' => 'fake_hash',
+                'Role' => 'Student',
+                'Is_Verified' => true,
+                'Avg_Rating' => 2.0,
+                'Total_Completed' => 0,
+                'Account_Status' => 'Active',
+                'Warning_Count' => 0,
+                'Service_Modes' => ['Remote'],
+            ]);
+            if ($i % 2 === 0) {
+                $weak->skills()->attach([1]);
+            } else {
+                $weak->skills()->attach([2]);
+            }
+        }
+
+        $testCases = [[
+            'request' => $request,
+            'successful_provider_ids' => $successfulIds,
+        ]];
+
+        $metrics = $this->recommender->evaluate($testCases, k: 5);
+
+        $this->assertGreaterThanOrEqual(0.80, $metrics['precision_at_k'], 'Precision@5 should be at least 0.80');
     }
 }

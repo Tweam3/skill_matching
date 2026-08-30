@@ -35,6 +35,7 @@ class User extends Authenticatable
         'Suspended_At',
         'Rejection_Reason',
         'settings',
+        'Service_Modes',
     ];
 
     protected $hidden = [
@@ -46,6 +47,7 @@ class User extends Authenticatable
         'Is_Verified' => 'boolean',
         'Created_At' => 'datetime',
         'settings' => 'array',
+        'Service_Modes' => 'array',
     ];
 
     protected $appends = ['name'];

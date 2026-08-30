@@ -49,6 +49,10 @@
       <h3 style="margin-top:0;">Completion Rate by Category</h3>
       <canvas id="categoryChart" height="120"></canvas>
     </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Average User Rating Trend (12 months)</h3>
+      <canvas id="ratingTrendChart" height="120"></canvas>
+    </div>
   </div>
 
   {{-- Top-Rated Providers Table --}}
@@ -75,6 +79,59 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+  {{-- Most Active Providers --}}
+  <div class="card" style="margin-top:24px;">
+    <h3 style="margin-top:0;">Most Active Service Providers</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Provider</th><th>Completed</th><th>Rating</th><th>Verified</th><th>Skills</th></tr>
+        </thead>
+        <tbody>
+          @forelse ($metrics['most_active_providers'] as $provider)
+            <tr>
+              <td>{{ $provider->Full_Name }}</td>
+              <td>{{ $provider->Total_Completed }}</td>
+              <td>{{ number_format((float) $provider->Avg_Rating, 2) }}/5</td>
+              <td>{{ $provider->Is_Verified ? 'Yes' : 'No' }}</td>
+              <td>{{ $provider->skills->pluck('Skill_Title')->join(', ') }}</td>
+            </tr>
+          @empty
+            <tr><td colspan="5" style="text-align:center; color:var(--muted);">No active providers found.</td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {{-- Most Requested Categories --}}
+  <div class="card" style="margin-top:24px;">
+    <h3 style="margin-top:0;">Most Requested Skill Categories</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Category</th><th>Requests</th></tr>
+        </thead>
+        <tbody>
+          @forelse ($metrics['most_requested_categories'] as $cat)
+            <tr>
+              <td>{{ $cat->Category }}</td>
+              <td>{{ $cat->request_count }}</td>
+            </tr>
+          @empty
+            <tr><td colspan="2" style="text-align:center; color:var(--muted);">No requests yet.</td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {{-- Average Rating Trend Chart --}}
+  <div class="card" style="margin-top:24px;">
+    <h3 style="margin-top:0;">Average User Rating Trend (12 months)</h3>
+    <canvas id="ratingTrendChart" height="120"></canvas>
   </div>
 </div>
 
@@ -128,6 +185,30 @@
       }]
     },
     options: { responsive: true, indexAxis: 'y', scales: { x: { beginAtZero: true, max: 100 } } }
+  });
+
+  var ctx4 = document.getElementById('ratingTrendChart').getContext('2d');
+  new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: @json($metrics['average_rating_trend']['labels']),
+      datasets: [{
+        label: 'Avg Rating',
+        data: @json($metrics['average_rating_trend']['data']),
+        borderColor: 'rgb(239, 68, 68)',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: false, min: 0, max: 5, ticks: { stepSize: 1 } },
+        x: { ticks: { maxRotation: 45, minRotation: 0 } }
+      }
+    }
   });
 })();
 </script>

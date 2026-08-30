@@ -14,10 +14,12 @@ return [
     */
 
     'weights' => [
-        'skill_overlap' => 0.40,
-        'category_coverage' => 0.25,
-        'rating' => 0.20,
-        'profile_quality' => 0.15,
+        'skill_overlap' => 0.30,
+        'category_coverage' => 0.20,
+        'service_mode' => 0.15,
+        'profile_tags' => 0.15,
+        'rating' => 0.12,
+        'profile_quality' => 0.08,
     ],
 
     /*

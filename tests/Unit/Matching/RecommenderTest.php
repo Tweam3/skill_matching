@@ -60,6 +60,7 @@ class RecommenderTest extends TestCase
             'Title' => 'Test Request',
             'Description' => 'Test description',
             'Status' => 'Open',
+            'Service_Mode' => 'Remote',
         ]);
         $request->Request_ID = $id;
         $request->setRelation('skill', $primarySkill);
@@ -84,8 +85,13 @@ class RecommenderTest extends TestCase
             'Avg_Rating' => 5.0,
             'Total_Completed' => 10,
             'Is_Verified' => true,
+            'Service_Modes' => ['Remote', 'Face-to-Face', 'Hybrid'],
         ]);
-        $user->setRelation('skills', collect([$php, $js]));
+        $skills = collect([$php, $js])->map(function ($skill) {
+            $skill->setRelation('pivot', (object) ['Proficiency' => 4]);
+            return $skill;
+        });
+        $user->setRelation('skills', $skills);
 
         $result = $this->recommender->score($request, $user);
 
@@ -232,6 +238,8 @@ class RecommenderTest extends TestCase
 
         $this->assertArrayHasKey('skill_overlap', $result['breakdown']);
         $this->assertArrayHasKey('category_coverage', $result['breakdown']);
+        $this->assertArrayHasKey('service_mode', $result['breakdown']);
+        $this->assertArrayHasKey('profile_tags', $result['breakdown']);
         $this->assertArrayHasKey('rating', $result['breakdown']);
         $this->assertArrayHasKey('profile_quality', $result['breakdown']);
         $this->assertArrayHasKey('score', $result);

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Analytics;
 
 use App\Models\Assignment;
+use App\Models\Review;
 use App\Models\Skill;
 use App\Models\SkillRequest;
 use App\Models\User;
@@ -346,9 +347,85 @@ class AnalyticsDashboardTest extends TestCase
         $this->assertEquals(1, $count);
     }
 
+    // --- KPI 7: Most Active Providers ---
+
+    public function test_most_active_providers_ordered_by_completions(): void
+    {
+        $providers = (new AnalyticsService)->mostActiveProviders(5);
+
+        $this->assertCount(4, $providers);
+        $this->assertEquals('Provider One', $providers[0]->Full_Name);
+        $this->assertEquals(20, (int) $providers[0]->Total_Completed);
+        $this->assertEquals('Provider Two', $providers[1]->Full_Name);
+        $this->assertEquals(15, (int) $providers[1]->Total_Completed);
+        $this->assertEquals('Provider Three', $providers[2]->Full_Name);
+        $this->assertEquals(5, (int) $providers[2]->Total_Completed);
+        $this->assertEquals('Invalid Provider', $providers[3]->Full_Name);
+        $this->assertEquals(2, (int) $providers[3]->Total_Completed);
+    }
+
+    // --- KPI 8: Most Requested Skill Categories ---
+
+    public function test_most_requested_skill_categories(): void
+    {
+        SkillRequest::query()->delete();
+
+        $this->createRequest(1, 'R1');
+        $this->createRequest(1, 'R2');
+        $this->createRequest(2, 'R3');
+        $this->createRequest(3, 'R4');
+
+        $result = (new AnalyticsService)->mostRequestedSkillCategories(5);
+
+        $this->assertNotEmpty($result);
+        $this->assertEquals('Programming', $result[0]->Category);
+        $this->assertEquals(3, (int) $result[0]->request_count);
+    }
+
+    // --- KPI 9: Average User Rating Trend ---
+
+    public function test_average_user_rating_trend_returns_monthly_data(): void
+    {
+        Review::query()->delete();
+        SkillRequest::query()->delete();
+
+        $r = $this->createRequest(1, 'RV1');
+        Review::create([
+            'Reviewed_User_ID' => $this->provider1->User_ID,
+            'Reviewer_ID' => $this->admin->User_ID,
+            'Request_ID' => $r->Request_ID,
+            'Rating' => 5,
+            'Comment' => 'Great',
+            'Created_At' => now()->subMonths(1),
+        ]);
+        Review::create([
+            'Reviewed_User_ID' => $this->provider2->User_ID,
+            'Reviewer_ID' => $this->admin->User_ID,
+            'Request_ID' => $r->Request_ID,
+            'Rating' => 3,
+            'Comment' => 'Okay',
+            'Created_At' => now()->subMonths(1),
+        ]);
+        Review::create([
+            'Reviewed_User_ID' => $this->provider3->User_ID,
+            'Reviewer_ID' => $this->admin->User_ID,
+            'Request_ID' => $r->Request_ID,
+            'Rating' => 4,
+            'Comment' => 'Good',
+            'Created_At' => now(),
+        ]);
+
+        $result = (new AnalyticsService)->averageUserRatingTrend(12);
+
+        $this->assertCount(12, $result['labels']);
+        $this->assertCount(12, $result['data']);
+        $this->assertEquals(4.0, $result['data'][10]);
+        $this->assertEquals(4.0, $result['data'][11]);
+    }
+
     // --- All Metrics Integration ---
 
-    public function test_all_metrics_returns_all_six_kpis(): void
+    public function test_all_metrics_returns_all_nine_kpis(): void
     {
         $metrics = (new AnalyticsService)->allMetrics();
 
@@ -358,9 +435,12 @@ class AnalyticsDashboardTest extends TestCase
         $this->assertArrayHasKey('monthly_match_volume', $metrics);
         $this->assertArrayHasKey('completion_rate_by_category', $metrics);
         $this->assertArrayHasKey('active_provider_count', $metrics);
+        $this->assertArrayHasKey('most_active_providers', $metrics);
+        $this->assertArrayHasKey('most_requested_categories', $metrics);
+        $this->assertArrayHasKey('average_rating_trend', $metrics);
     }
 
-    public function test_dashboard_displays_all_six_kpis(): void
+    public function test_dashboard_displays_all_nine_kpis(): void
     {
         $response = $this->get('/analytics');
 
@@ -371,5 +451,8 @@ class AnalyticsDashboardTest extends TestCase
         $response->assertSee('Monthly Match Volume');
         $response->assertSee('Completion Rate by Category');
         $response->assertSee('Active Providers (30d)');
+        $response->assertSee('Most Active Service Providers');
+        $response->assertSee('Most Requested Skill Categories');
+        $response->assertSee('Average User Rating Trend');
     }
 }
