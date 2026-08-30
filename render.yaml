@@ -3,6 +3,10 @@ services:
     name: skill-matching
     env: docker
     dockerfilePath: ./Dockerfile
+    disk:
+      name: skill-matching-storage
+      mountPath: /var/www/html/storage
+      size: 1
     envVars:
       - key: APP_ENV
         value: production
