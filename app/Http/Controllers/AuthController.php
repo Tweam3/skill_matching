@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -22,6 +25,11 @@ class AuthController extends Controller
         ]);
         $user = User::where('Email', $credentials['email'])->first();
         if (! $user || ! Hash::check($credentials['password'], $user->Password_Hash)) {
+            Log::warning('Failed login attempt', [
+                'email' => $credentials['email'],
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
             return back()->withErrors(['email' => 'Invalid credentials.']);
         }
 
@@ -63,9 +71,13 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,Email'],
             'student_id' => ['required', 'string', 'max:50', 'unique:users,Student_ID', 'regex:/^\d{4}-\d{4}-[A-Z]$/i'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
             'role' => ['nullable', 'string', 'in:Student,Faculty,Staff,Admin'],
             'council' => ['nullable', 'string', 'in:HBM,CSC,BIT,EDUC,Unaffiliated', 'required_if:role,Student,Faculty'],
+        ], [
+            'password.confirmed' => 'Password confirmation does not match.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'student_id.regex' => 'Student ID must follow the format: YYYY-XXXX-X (e.g., 2023-1234-M).',
         ]);
 
         $approvedStudentIds = [

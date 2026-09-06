@@ -17,6 +17,7 @@ use App\Services\Moderation\ModerationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -67,24 +68,34 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,Email'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:Student,Faculty,Staff,Admin'],
             'council' => ['nullable', 'string', 'in:HBM,CSC,BIT,EDUC,Unaffiliated', 'required_if:role,Student,Faculty'],
         ]);
-        $council = in_array($validated['role'], ['Student', 'Faculty'])
-            ? $validated['council']
-            : null;
-        User::create([
-            'Full_Name' => $validated['name'],
-            'Email' => $validated['email'],
-            'Password_Hash' => bcrypt($validated['password']),
-            'Role' => $validated['role'],
-            'Is_Verified' => true,
-            'Council' => $council,
-        ]);
-        $this->logAction('register_user', 'Registered user: '.$validated['email'].' as '.$validated['role']);
+        try {
+            $council = in_array($validated['role'], ['Student', 'Faculty'])
+                ? $validated['council']
+                : null;
+            User::create([
+                'Full_Name' => $validated['name'],
+                'Email' => $validated['email'],
+                'Password_Hash' => bcrypt($validated['password']),
+                'Role' => $validated['role'],
+                'Is_Verified' => true,
+                'Account_Status' => 'Active',
+                'Council' => $council,
+            ]);
+            $this->logAction('register_user', 'Registered user: '.$validated['email'].' as '.$validated['role']);
+        } catch (\Exception $e) {
+            Log::error('Admin register user failed', [
+                'email' => $validated['email'],
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id(),
+            ]);
+            return back()->with('error', 'Failed to register user. Please try again.');
+        }
 
-        return back();
+        return back()->with('success', 'User registered successfully.');
     }
 
     public function verifyUser(Request $request)
@@ -170,20 +181,29 @@ class AdminController extends Controller
         ]);
         $uid = $request->user_id;
 
-        DB::transaction(function () use ($uid) {
-            UserSkill::where('User_ID', $uid)->delete();
-            Assignment::where('User_ID', $uid)->delete();
-            Message::where('Sender_ID', $uid)->orWhere('Receiver_ID', $uid)->delete();
-            Notification::where('User_ID', $uid)->delete();
-            Review::where('Reviewer_ID', $uid)->orWhere('Reviewed_User_ID', $uid)->delete();
-            UserMatch::where('Matched_User_ID', $uid)->delete();
-            Report::where('Reporter_ID', $uid)->orWhere('Reported_User_ID', $uid)->delete();
-            SkillRequest::where('User_ID', $uid)->delete();
-            User::where('User_ID', $uid)->delete();
-        });
+        try {
+            DB::transaction(function () use ($uid) {
+                UserSkill::where('User_ID', $uid)->delete();
+                Assignment::where('User_ID', $uid)->delete();
+                Message::where('Sender_ID', $uid)->orWhere('Receiver_ID', $uid)->delete();
+                Notification::where('User_ID', $uid)->delete();
+                Review::where('Reviewer_ID', $uid)->orWhere('Reviewed_User_ID', $uid)->delete();
+                UserMatch::where('Matched_User_ID', $uid)->delete();
+                Report::where('Reporter_ID', $uid)->orWhere('Reported_User_ID', $uid)->delete();
+                SkillRequest::where('User_ID', $uid)->delete();
+                User::where('User_ID', $uid)->delete();
+            });
 
-        $this->logAction('delete_user', 'Deleted user ID: '.$uid);
+            $this->logAction('delete_user', 'Deleted user ID: '.$uid);
+        } catch (\Exception $e) {
+            Log::error('Admin delete user failed', [
+                'user_id' => $uid,
+                'admin_id' => Auth::id(),
+                'error' => $e->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to delete user. Please try again.');
+        }
 
-        return back();
+        return back()->with('success', 'User deleted successfully.');
     }
 }
