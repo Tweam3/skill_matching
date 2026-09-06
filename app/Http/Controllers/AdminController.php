@@ -64,6 +64,11 @@ class AdminController extends Controller
         return back();
     }
 
+    public function showCreateUserForm()
+    {
+        return view('admin.users.create');
+    }
+
     public function registerUser(Request $request)
     {
         $validated = $request->validate([
