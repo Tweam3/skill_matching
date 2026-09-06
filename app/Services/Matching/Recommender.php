@@ -307,9 +307,24 @@ class Recommender
     /**
      * Normalised rating with a confidence factor that ramps up as the
      * provider completes more transactions.
+     *
+     * Cold-start rule: providers with zero completed transactions receive
+     * a neutral prior rating (config: matching.cold_start_prior_rating)
+     * so they are not unfairly penalised compared to rated providers.
      */
     protected function ratingScore(User $provider): float
     {
+        $hasRatings = (int) $provider->Total_Completed > 0 && (float) $provider->Avg_Rating > 0;
+
+        if (! $hasRatings) {
+            $prior = config('matching.cold_start_prior_rating', 3.0);
+            $normalized = $this->maxRating > 0
+                ? (float) $prior / $this->maxRating
+                : 0.0;
+
+            return $normalized * 0.5;
+        }
+
         $normalized = $this->maxRating > 0
             ? (float) $provider->Avg_Rating / $this->maxRating
             : 0.0;

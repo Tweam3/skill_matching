@@ -38,6 +38,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Cold-Start Rule
+    |--------------------------------------------------------------------------
+    |
+    | Prior rating assigned to providers with zero completed transactions
+    | so they are not unfairly penalised in the rating dimension.
+    |
+    */
+
+    'cold_start_prior_rating' => 3.0,
+
+    /*
+    |--------------------------------------------------------------------------
     | Match Thresholds
     |--------------------------------------------------------------------------
     |

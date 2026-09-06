@@ -28,7 +28,7 @@ class AuthController extends Controller
         $status = strtolower($user->Account_Status ?? 'active');
         if ($status === 'suspended') {
             $suspendedAt = $user->Suspended_At;
-            if ($suspendedAt && $suspendedAt->addDay()->isPast()) {
+            if ($suspendedAt && $suspendedAt->copy()->addDays(3)->isPast()) {
                 $user->update([
                     'Account_Status' => 'Active',
                     'Suspended_At' => null,

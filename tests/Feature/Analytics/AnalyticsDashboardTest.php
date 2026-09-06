@@ -455,4 +455,18 @@ class AnalyticsDashboardTest extends TestCase
         $response->assertSee('Most Requested Skill Categories');
         $response->assertSee('Average User Rating Trend');
     }
+
+    public function test_report_download_generates_csv(): void
+    {
+        $response = $this->get('/analytics/report');
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+        $response->assertHeader('Content-Disposition', 'attachment; filename="campusskill-analytics-report-' . now()->format('Y-m-d') . '.csv"');
+        $body = $response->getContent();
+        $this->assertStringContainsString('Section', $body);
+        $this->assertStringContainsString('Total Service Requests', $body);
+        $this->assertStringContainsString('Most Requested Categories', $body);
+        $this->assertStringContainsString('Average Rating Trend', $body);
+    }
 }

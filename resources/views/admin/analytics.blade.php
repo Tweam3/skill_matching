@@ -5,6 +5,7 @@
   <div class="page-header">
     <h2>Analytics Dashboard</h2>
     <span style="color:var(--muted); font-size:0.85rem;">Real-time platform KPIs</span>
+    <a href="{{ route('admin.analytics.report') }}" class="btn btn-primary btn-sm" style="margin-left:16px;">Download Report (CSV)</a>
   </div>
 
   {{-- KPI Summary Cards --}}

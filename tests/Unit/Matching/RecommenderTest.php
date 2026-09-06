@@ -340,4 +340,41 @@ class RecommenderTest extends TestCase
 
         $this->assertLessThan(50.0, $result['score']);
     }
+
+    public function test_cold_start_unrated_provider_receives_prior_rating(): void
+    {
+        $php = $this->makeSkill(1, 'PHP', 'Programming');
+
+        $request = $this->makeRequest(1, 1, 1, [$php], []);
+
+        $rated = $this->makeUser(10, [
+            'Avg_Rating' => 3.0,
+            'Total_Completed' => 5,
+            'Is_Verified' => true,
+        ]);
+        $rated->setRelation('skills', collect([$php])->map(function ($skill) {
+            $skill->setRelation('pivot', (object) ['Proficiency' => 3]);
+            return $skill;
+        }));
+
+        $unrated = $this->makeUser(11, [
+            'Avg_Rating' => 0,
+            'Total_Completed' => 0,
+            'Is_Verified' => true,
+        ]);
+        $unrated->setRelation('skills', collect([$php])->map(function ($skill) {
+            $skill->setRelation('pivot', (object) ['Proficiency' => 3]);
+            return $skill;
+        }));
+
+        $recommender = new Recommender;
+
+        $ratedResult = $recommender->score($request, $rated);
+        $unratedResult = $recommender->score($request, $unrated);
+        $ratedRating = $ratedResult['breakdown']['rating'];
+        $unratedRating = $unratedResult['breakdown']['rating'];
+
+        $this->assertGreaterThan(0, $unratedRating, 'Cold-start provider should receive a prior rating score.');
+        $this->assertGreaterThanOrEqual($unratedRating, $ratedRating, 'Rated provider should score at least as high as cold-start prior.');
+    }
 }
