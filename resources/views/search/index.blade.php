@@ -77,7 +77,7 @@
     <div class="alert alert-info">Found Nothing Try Again Later</div>
   @else
     @if (! $results->isEmpty())
-      <h3 style="margin-bottom:12px;">Service Requests</h3>
+      <h3 style="margin-bottom:12px;">Search Requests</h3>
       <div class="cards-grid">
         @foreach ($results as $r)
           @php $allSkills = $r->skills->merge([$r->skill])->unique('Skill_ID')->values(); @endphp

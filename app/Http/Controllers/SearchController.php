@@ -15,8 +15,6 @@ class SearchController extends Controller
 
     public function index(Request $request)
     {
-        $searchIn = 'both';
-
         $serviceMode = $request->query('service_mode', '');
         $categories = $request->query('categories', []);
         $keyword = $request->query('keyword', '');
@@ -26,11 +24,14 @@ class SearchController extends Controller
         }
 
         $request->validate([
+            'search_in' => ['nullable', 'string', 'in:'.implode(',', self::VALID_SEARCH_IN)],
             'service_mode' => ['nullable', 'string', 'in:'.implode(',', self::VALID_SERVICE_MODES)],
             'categories.*' => ['string', 'distinct'],
             'subcategories.*' => ['string', 'distinct'],
             'keyword' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $searchIn = $request->input('search_in', 'requests');
 
         $serviceMode = $request->input('service_mode', '');
         $categories = $request->input('categories', []);
