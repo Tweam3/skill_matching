@@ -65,7 +65,7 @@
           @else
             <div class="chat-avatar">{{ $partnerInitial }}</div>
           @endif
-          <div style="flex:1;">
+            <div style="flex:1;">
             <div class="chat-header-name">{{ $partnerName }}</div>
             <div class="chat-header-sub">Chat</div>
           </div>
