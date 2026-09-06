@@ -397,7 +397,8 @@ class SearchTest extends TestCase
         $response = $this->post('/admin/users/register', [
             'name' => 'Dr. Faculty',
             'email' => 'faculty@test.com',
-            'password' => 'password123',
+            'password' => 'Str0ng!Pass',
+            'password_confirmation' => 'Str0ng!Pass',
             'role' => 'Faculty',
             'council' => 'HBM',
         ]);
@@ -414,7 +415,8 @@ class SearchTest extends TestCase
         $response = $this->post('/admin/users/register', [
             'name' => 'Staff Member',
             'email' => 'staff@test.com',
-            'password' => 'password123',
+            'password' => 'Str0ng!Pass',
+            'password_confirmation' => 'Str0ng!Pass',
             'role' => 'Staff',
         ]);
 
