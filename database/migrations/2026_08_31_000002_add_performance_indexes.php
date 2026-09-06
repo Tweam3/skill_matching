@@ -2,71 +2,70 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    private const INDEXES = [
+        'user_skills' => ['User_ID', 'Skill_ID'],
+        'matches' => ['Request_ID', 'Matched_User_ID'],
+        'reviews' => ['Reviewed_User_ID', 'Created_At'],
+        'reports' => ['Reported_User_ID', 'Status'],
+        'notifications' => ['User_ID', 'Status'],
+        'admin_action_logs' => ['Admin_ID'],
+    ];
+
     public function up(): void
     {
-        Schema::table('user_skills', function (Blueprint $table) {
-            $table->index('User_ID');
-            $table->index('Skill_ID');
-        });
+        foreach (self::INDEXES as $table => $columns) {
+            foreach ($columns as $column) {
+                if (! Schema::hasTable($table)) {
+                    continue;
+                }
 
-        Schema::table('matches', function (Blueprint $table) {
-            $table->index('Request_ID');
-            $table->index('Matched_User_ID');
-        });
+                $indexName = $table.'_'.$column.'_index';
 
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->index('Reviewed_User_ID');
-            $table->index('Created_At');
-        });
-
-        Schema::table('reports', function (Blueprint $table) {
-            $table->index('Reported_User_ID');
-            $table->index('Status');
-        });
-
-        Schema::table('notifications', function (Blueprint $table) {
-            $table->index('User_ID');
-            $table->index('Status');
-        });
-
-        Schema::table('admin_action_logs', function (Blueprint $table) {
-            $table->index('User_ID');
-        });
+                if (! $this->indexExists($table, $indexName)) {
+                    Schema::table($table, function (Blueprint $table) use ($column, $indexName) {
+                        $table->index($column, $indexName);
+                    });
+                }
+            }
+        }
     }
 
     public function down(): void
     {
-        Schema::table('user_skills', function (Blueprint $table) {
-            $table->dropIndex(['User_ID']);
-            $table->dropIndex(['Skill_ID']);
-        });
+        foreach (self::INDEXES as $table => $columns) {
+            foreach ($columns as $column) {
+                $indexName = $table.'_'.$column.'_index';
 
-        Schema::table('matches', function (Blueprint $table) {
-            $table->dropIndex(['Request_ID']);
-            $table->dropIndex(['Matched_User_ID']);
-        });
+                if ($this->indexExists($table, $indexName)) {
+                    Schema::table($table, function (Blueprint $table) use ($indexName) {
+                        $table->dropIndex($indexName);
+                    });
+                }
+            }
+        }
+    }
 
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->dropIndex(['Reviewed_User_ID']);
-            $table->dropIndex(['Created_At']);
-        });
+    private function indexExists(string $table, string $indexName): bool
+    {
+        $driver = Schema::getConnection()->getDriverName();
 
-        Schema::table('reports', function (Blueprint $table) {
-            $table->dropIndex(['Reported_User_ID']);
-            $table->dropIndex(['Status']);
-        });
+        if ($driver === 'pgsql') {
+            $result = DB::select(
+                'SELECT 1 FROM pg_indexes WHERE schemaname = ? AND tablename = ? AND indexname = ?',
+                ['public', $table, $indexName]
+            );
+        } else {
+            $result = DB::select(
+                'SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?',
+                [$indexName]
+            );
+        }
 
-        Schema::table('notifications', function (Blueprint $table) {
-            $table->dropIndex(['User_ID']);
-            $table->dropIndex(['Status']);
-        });
-
-        Schema::table('admin_action_logs', function (Blueprint $table) {
-            $table->dropIndex(['User_ID']);
-        });
+        return ! empty($result);
     }
 };
