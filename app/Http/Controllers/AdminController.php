@@ -216,8 +216,9 @@ class AdminController extends Controller
                 'user_id' => $uid,
                 'admin_id' => Auth::id(),
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            return back()->with('error', 'Failed to delete user. Please try again.');
+            return back()->with('error', 'Delete failed: '.$e->getMessage());
         }
 
         return back()->with('success', 'User deleted successfully.');
