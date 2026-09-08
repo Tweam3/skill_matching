@@ -17,6 +17,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# cache bust: 2026-09-08 DashboardController fix
 COPY . /var/www/html/
 
 RUN composer install --no-interaction --prefer-dist --no-dev --no-scripts
