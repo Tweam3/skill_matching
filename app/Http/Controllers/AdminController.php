@@ -201,6 +201,7 @@ class AdminController extends Controller
                 }
 
                 UserSkill::where('User_ID', $uid)->delete();
+                Assignment::where('User_ID', $uid)->delete();
                 Message::where('Sender_ID', $uid)->orWhere('Receiver_ID', $uid)->delete();
                 Notification::where('User_ID', $uid)->delete();
                 Review::where('Reviewer_ID', $uid)->orWhere('Reviewed_User_ID', $uid)->delete();
