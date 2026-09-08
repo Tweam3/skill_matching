@@ -15,6 +15,8 @@ if [ -n "$DB_PASSWORD" ]; then sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWOR
 php /var/www/html/artisan key:generate --force
 php /var/www/html/artisan config:clear
 php /var/www/html/artisan route:clear
+php /var/www/html/artisan cache:clear
+/usr/bin/composer dump-autoload -o 2>/dev/null || true
 php /var/www/html/artisan migrate --force
 # seeding removed: run manually with `php artisan db:seed --force` when needed
 rm -f /var/www/html/public/storage

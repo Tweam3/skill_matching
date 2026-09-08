@@ -15,9 +15,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+ARG CACHE_BUST=2026-09-08-4
 WORKDIR /var/www/html
 
-# cache bust: 2026-09-08 DashboardController fix
 COPY . /var/www/html/
 
 RUN composer install --no-interaction --prefer-dist --no-dev --no-scripts
