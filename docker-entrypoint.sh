@@ -16,7 +16,7 @@ php /var/www/html/artisan key:generate --force
 php /var/www/html/artisan config:clear
 php /var/www/html/artisan route:clear
 php /var/www/html/artisan migrate --force
-php /var/www/html/artisan db:seed --force
+# seeding removed: run manually with `php artisan db:seed --force` when needed
 rm -f /var/www/html/public/storage
 php /var/www/html/artisan storage:link
 
