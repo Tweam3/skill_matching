@@ -191,20 +191,22 @@ class AdminController extends Controller
             $requestIds = SkillRequest::where('User_ID', $uid)->pluck('Request_ID')->all();
 
             DB::transaction(function () use ($uid, $requestIds) {
+                if (! empty($requestIds)) {
+                    Assignment::whereIn('Request_ID', $requestIds)->delete();
+                    Review::whereIn('Request_ID', $requestIds)->delete();
+                    Report::whereIn('Request_ID', $requestIds)->delete();
+                    UserMatch::whereIn('Request_ID', $requestIds)->delete();
+                    DB::table('request_skills')->whereIn('Request_ID', $requestIds)->delete();
+                    SkillRequest::whereIn('Request_ID', $requestIds)->delete();
+                }
+
                 UserSkill::where('User_ID', $uid)->delete();
-                Assignment::where('User_ID', $uid)->delete();
                 Message::where('Sender_ID', $uid)->orWhere('Receiver_ID', $uid)->delete();
                 Notification::where('User_ID', $uid)->delete();
                 Review::where('Reviewer_ID', $uid)->orWhere('Reviewed_User_ID', $uid)->delete();
                 UserMatch::where('Matched_User_ID', $uid)->delete();
                 Report::where('Reporter_ID', $uid)->orWhere('Reported_User_ID', $uid)->delete();
                 AdminActionLog::where('Admin_ID', $uid)->delete();
-
-                if (! empty($requestIds)) {
-                    DB::table('request_skills')->whereIn('Request_ID', $requestIds)->delete();
-                }
-
-                SkillRequest::where('User_ID', $uid)->delete();
                 User::where('User_ID', $uid)->delete();
             });
 
