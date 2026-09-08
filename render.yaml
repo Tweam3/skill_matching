@@ -8,12 +8,6 @@ services:
       mountPath: /var/www/html/storage
       size: 1
     envVars:
-      APP_ENV: production
-      APP_KEY: ${APP_KEY}
-      APP_DEBUG: false
-      CACHE_DRIVER: redis
-      SESSION_DRIVER: redis
-      QUEUE_CONNECTION: redis
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
