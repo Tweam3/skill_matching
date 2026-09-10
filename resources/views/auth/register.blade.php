@@ -24,7 +24,7 @@
       </div>
       <div class="form-group">
         <label>Student ID</label>
-        <input type="text" name="student_id" required value="{{ old('student_id') }}" placeholder="e.g. 2023-7317-M">
+        <input type="text" name="student_id" required value="{{ old('student_id') }}" placeholder="YYYY-XXXX-X">
       </div>
       <div class="form-group">
         <label>Password</label>

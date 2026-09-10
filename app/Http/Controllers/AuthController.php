@@ -77,8 +77,12 @@ class AuthController extends Controller
         ], [
             'password.confirmed' => 'Password confirmation does not match.',
             'password.min' => 'Password must be at least 8 characters.',
-            'student_id.regex' => 'Student ID must follow the format: YYYY-XXXX-X (e.g., 2023-1234-M).',
+            'student_id.unique' => 'This Student ID is already registered. Please use a different one.',
+            'student_id.regex' => 'Student ID must follow the format: YYYY-XXXX-X.',
         ]);
+
+        // Normalize Student ID to uppercase so lowercase variants cannot bypass uniqueness
+        $validated['student_id'] = strtoupper($validated['student_id']);
 
         $approvedStudentIds = [
             '2023-7317-M', '2023-6293-M', '2023-8104-M', '2023-1281-M', '2023-1302-M',
