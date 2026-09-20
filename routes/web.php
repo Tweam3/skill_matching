@@ -15,6 +15,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
+use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -36,6 +37,9 @@ Route::get('/pending-verification', function () {
 
     return view('auth.pending');
 })->name('pending.verification')->middleware('auth');
+
+Route::get('/verify-email/{token}/{userId}', [VerifyEmailController::class, 'verify'])->name('verify.email');
+Route::post('/resend-verification', [VerifyEmailController::class, 'resend'])->name('resend.verification')->middleware('auth');
 
 Route::get('/account/suspended', function () {
     return view('auth.suspended');

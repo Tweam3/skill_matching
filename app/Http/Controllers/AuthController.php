@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
@@ -119,6 +120,12 @@ class AuthController extends Controller
             'Account_Status' => $verified ? 'Active' : 'Pending',
             'Council' => $council,
         ]);
+
+        if (! $verified) {
+            $token = \Illuminate\Support\Str::random(64);
+            $user->update(['Verification_Token' => $token]);
+            Mail::to($validated['email'])->send(new \App\Mail\VerifyEmail($user, $token));
+        }
 
         Auth::login($user);
 
