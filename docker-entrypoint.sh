@@ -23,7 +23,7 @@ php /var/www/html/artisan route:clear
 php /var/www/html/artisan cache:clear
 /usr/bin/composer dump-autoload -o 2>/dev/null || true
 php /var/www/html/artisan migrate --force
-# seeding removed: run manually with `php artisan db:seed --force` when needed
+php /var/www/html/artisan db:seed --force
 rm -f /var/www/html/public/storage
 php /var/www/html/artisan storage:link
 
