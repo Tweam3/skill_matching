@@ -12,6 +12,8 @@ if [ -n "$DB_DATABASE" ]; then sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABAS
 if [ -n "$DB_USERNAME" ]; then sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" /var/www/html/.env; fi
 if [ -n "$DB_PASSWORD" ]; then sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" /var/www/html/.env; fi
 
+if [ -n "$APP_KEY" ]; then sed -i "s/^APP_KEY=.*/APP_KEY=$APP_KEY/" /var/www/html/.env; fi
+
 if [ -n "$APP_KEY" ] && [ "${APP_KEY#base64:}" = "$APP_KEY" ] && [ "${#APP_KEY}" -eq 44 ]; then
     export APP_KEY="base64:$APP_KEY"
 fi
