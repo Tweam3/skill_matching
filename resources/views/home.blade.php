@@ -2,8 +2,9 @@
 
 @section('content')
 @guest
-  <div class="hero-full-width" style="background:linear-gradient(135deg, #002147 0%, #0a2d6e 100%); color:#fff; padding:80px 20px; text-align:center;">
-    <div style="max-width:800px; margin:0 auto;">
+  <div class="hero-full-width" style="background: url('https://images.unsplash.com/photo-1562774053-701939374585?w=1920&q=80') center/cover no-repeat; color:#fff; padding:100px 20px; text-align:center; position:relative;">
+    <div style="position:absolute; inset:0; background:rgba(0,33,71,0.75);"></div>
+    <div style="max-width:800px; margin:0 auto; position:relative; z-index:1;">
       <div style="margin-bottom:20px;">
         <span class="university-badge" style="background:rgba(255,255,255,0.15); color:#FFC72C; padding:8px 18px; border-radius:999px; font-weight:700; letter-spacing:0.04em;">ISAT-U</span>
       </div>
