@@ -28,6 +28,16 @@
       </div>
     @endif
 
+    @if (auth()->id() == $request->User_ID && ($request->assignments->isEmpty() || $request->assignments->whereIn('Status', ['Pending', 'Accepted'])->isEmpty()))
+      <div style="margin-top:16px; padding:16px; background:#FFF5F5; border-radius:8px; border:1px solid #FECACA;">
+        <form method="POST" action="{{ route('requests.destroy', $request->Request_ID) }}" onsubmit="return confirm('Delete this request? This action cannot be undone.');">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn btn-danger">Delete Request</button>
+        </form>
+      </div>
+    @endif
+
     @if (session('success') && str_contains(session('success'), 'failed'))
       @php
         $failedAssignment = $request->assignments->firstWhere('Status', 'Failed');

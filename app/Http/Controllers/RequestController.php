@@ -138,7 +138,16 @@ class RequestController extends Controller
 
     public function destroy($id)
     {
-        $skillRequest = SkillRequest::findOrFail($id);
+        $skillRequest = SkillRequest::with('assignments')->findOrFail($id);
+
+        if ($skillRequest->User_ID != Auth::id()) {
+            abort(403);
+        }
+
+        $hasActiveAssignment = $skillRequest->assignments->whereIn('Status', ['Pending', 'Accepted'])->isNotEmpty();
+        if ($hasActiveAssignment) {
+            return back()->with('error', 'Cannot delete request with pending or accepted applicants.');
+        }
 
         DB::transaction(function () use ($id, $skillRequest) {
             UserMatch::where('Request_ID', $id)->delete();

@@ -75,11 +75,13 @@
           <div style="margin-top:10px; display:flex; gap:8px;">
             <a href="{{ route('requests.show', $r->Request_ID) }}" class="btn btn-secondary btn-sm">View</a>
             <a href="{{ route('requests.edit', $r->Request_ID) }}" class="btn btn-primary btn-sm">Edit</a>
+            @if ($r->assignments->isEmpty() || $r->assignments->whereIn('Status', ['Pending', 'Accepted'])->isEmpty())
             <form method="POST" action="{{ route('requests.destroy', $r->Request_ID) }}" style="display:inline;" onsubmit="return confirm('Delete this request?');">
               @csrf
               @method('DELETE')
               <button type="submit" class="btn btn-danger btn-sm">Delete</button>
             </form>
+            @endif
           </div>
         </div>
       @endforeach
