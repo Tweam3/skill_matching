@@ -12,7 +12,10 @@ if [ -n "$DB_DATABASE" ]; then sed -i "s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABAS
 if [ -n "$DB_USERNAME" ]; then sed -i "s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/" /var/www/html/.env; fi
 if [ -n "$DB_PASSWORD" ]; then sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" /var/www/html/.env; fi
 
-php /var/www/html/artisan key:generate --force
+if [ -n "$APP_KEY" ] && [ "${APP_KEY#base64:}" = "$APP_KEY" ] && [ "${#APP_KEY}" -eq 44 ]; then
+    export APP_KEY="base64:$APP_KEY"
+fi
+
 php /var/www/html/artisan config:clear
 php /var/www/html/artisan route:clear
 php /var/www/html/artisan cache:clear
