@@ -12,22 +12,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
-      - key: APP_KEY
-        generateValue: true
       - key: APP_URL
         value: https://skill-matching-eg0c.onrender.com
       - key: DB_CONNECTION
         value: pgsql
-      - key: DB_HOST
-        value: dpg-d9vtio5bedkc739dbuqg-a
-      - key: DB_PORT
-        value: "5432"
-      - key: DB_DATABASE
-        value: skill_matching_system_t808
-      - key: DB_USERNAME
-        value: skill_matching_user
-      - key: DB_PASSWORD
-        value: ldcpUO7lzzCaZzcwHF4comYLfKW74lTG
       - key: SESSION_DRIVER
         value: file
       - key: SESSION_SECURE_COOKIE
