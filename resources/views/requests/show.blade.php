@@ -171,7 +171,74 @@
       </div>
     </form>
   </div>
-</div>
+@if (session('show_review_prompt') && auth()->id() == $request->User_ID)
+  @php
+    $reviewRequestId = session('review_request_id');
+    $reviewAssignmentId = session('review_assignment_id');
+    $hasReviewed = \App\Models\Review::where('Request_ID', $reviewRequestId)->where('Reviewer_ID', auth()->id())->exists();
+  @endphp
+  @if ($reviewAssignmentId && ! $hasReviewed)
+  <div id="review-prompt-modal-overlay" class="review-prompt-modal-overlay" onclick="if(event.target===this)closeReviewPromptModal()">
+    <div class="review-prompt-modal">
+      <div class="review-prompt-modal-header">
+        <h3>Leave a Review</h3>
+        <button type="button" class="review-prompt-modal-close" onclick="closeReviewPromptModal()">&times;</button>
+      </div>
+      <div class="review-prompt-modal-body">
+        <p>The request has been <strong>{{ $request->Status === 'Completed' ? 'completed' : 'failed' }}</strong>. Would you like to leave a review for the other party now?</p>
+      </div>
+      <div class="review-prompt-modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeReviewPromptModal()">Later</button>
+        <a href="{{ route('assignments.review', $reviewAssignmentId) }}" class="btn btn-primary btn-sm">Review Now</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('review-prompt-modal-overlay').classList.add('active');
+    });
+  </script>
+  @endif
+@endif
+
+@if (session('show_review_prompt') && auth()->id() !== $request->User_ID)
+  @php
+    $reviewRequestId = session('review_request_id');
+    $reviewAssignmentId = session('review_assignment_id');
+    $hasReviewed = \App\Models\Review::where('Request_ID', $reviewRequestId)->where('Reviewer_ID', auth()->id())->exists();
+  @endphp
+  @if ($reviewAssignmentId && ! $hasReviewed)
+  <div id="review-prompt-modal-overlay" class="review-prompt-modal-overlay" onclick="if(event.target===this)closeReviewPromptModal()">
+    <div class="review-prompt-modal">
+      <div class="review-prompt-modal-header">
+        <h3>Leave a Review</h3>
+        <button type="button" class="review-prompt-modal-close" onclick="closeReviewPromptModal()">&times;</button>
+      </div>
+      <div class="review-prompt-modal-body">
+        <p>The request has been <strong>{{ $request->Status === 'Completed' ? 'completed' : 'failed' }}</strong>. Would you like to leave a review for the requester now?</p>
+      </div>
+      <div class="review-prompt-modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeReviewPromptModal()">Later</button>
+        <a href="{{ route('assignments.review', $reviewAssignmentId) }}" class="btn btn-primary btn-sm">Review Now</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('review-prompt-modal-overlay').classList.add('active');
+    });
+  </script>
+  @endif
+@endif
+
+<script>
+function closeReviewPromptModal() {
+  const overlay = document.getElementById('review-prompt-modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+}
+</script>
 
 <script>
 function openRequestReportModal(userId, requestId) {

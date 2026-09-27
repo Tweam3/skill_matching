@@ -780,6 +780,34 @@ a:hover { color:var(--primary-hover); }
   display:flex; justify-content:space-between; align-items:center; gap:10px;
 }
 
+.review-prompt-modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55);
+  z-index:220; align-items:center; justify-content:center; padding:20px;
+}
+.review-prompt-modal-overlay.active { display:flex; }
+
+.review-prompt-modal {
+  background:var(--surface); width:100%; max-width:420px;
+  border-radius:14px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35);
+  overflow:hidden;
+}
+.review-prompt-modal-header {
+  padding:18px 20px; border-bottom:1px solid #E5E7EB;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.review-prompt-modal-header h3 { margin:0; font-size:1.1rem; color:var(--primary); }
+.review-prompt-modal-close {
+  background:none; border:none; font-size:1.5rem; color:var(--muted);
+  cursor:pointer; line-height:1;
+}
+.review-prompt-modal-close:hover { color:var(--text); }
+.review-prompt-modal-body { padding:20px; }
+.review-prompt-modal-body p { margin:0; line-height:1.6; }
+.review-prompt-modal-footer {
+  padding:14px 20px; border-top:1px solid #E5E7EB;
+  display:flex; justify-content:flex-end; gap:10px;
+}
+
 .star-rating {
   display:flex; gap:6px; justify-content:center; margin:16px 0;
 }

@@ -167,7 +167,11 @@ class RequestController extends Controller
             $request->update(['Status' => 'Completed']);
         });
 
-        return redirect()->route('requests.show', $id)->with('success', 'Request marked as completed. Please leave a review for the assigned user.');
+        return redirect()->route('requests.show', $id)
+            ->with('success', 'Request marked as completed.')
+            ->with('show_review_prompt', true)
+            ->with('review_request_id', $id)
+            ->with('review_assignment_id', $acceptedAssignment->Assignment_ID);
     }
 
     public function fail($id)
@@ -192,7 +196,11 @@ class RequestController extends Controller
             $request->update(['Status' => 'Failed']);
         });
 
-        return redirect()->route('requests.show', $id)->with('success', 'Request marked as failed. Please leave feedback for the provider.');
+        return redirect()->route('requests.show', $id)
+            ->with('success', 'Request marked as failed.')
+            ->with('show_review_prompt', true)
+            ->with('review_request_id', $id)
+            ->with('review_assignment_id', $acceptedAssignment ? $acceptedAssignment->Assignment_ID : null);
     }
 
     public function providerFeedback($id)
