@@ -2,7 +2,7 @@
 
 @section('content')
 @guest
-  <div class="hero-full-width" style="background: url('https://images.unsplash.com/photo-1562774053-701939374585?w=1920&q=80') center/cover no-repeat; color:#fff; padding:100px 20px; text-align:center; position:relative;">
+  <div class="hero-full-width" style="background: url('{{ asset('images/isat-u-building.jfif') }}') center/cover no-repeat; color:#fff; padding:100px 20px; text-align:center; position:relative;">
     <div style="position:absolute; inset:0; background:rgba(0,33,71,0.75);"></div>
     <div style="max-width:800px; margin:0 auto; position:relative; z-index:1;">
       <div style="margin-bottom:20px;">
