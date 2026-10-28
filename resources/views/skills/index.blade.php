@@ -54,11 +54,17 @@
                       @foreach ($skills as $s)
                         <div class="skill-card">
                           <div class="skill-name">{{ $s->Skill_Title }}</div>
-                          @if (in_array($s->Skill_ID, $userSkills))
-                            <button type="button" class="btn btn-secondary btn-sm btn-added" disabled>Added</button>
-                          @else
-                            <button type="button" onclick="openProficiencyModal({{ $s->Skill_ID }}, '{{ addslashes($s->Skill_Title) }}', this)" class="btn btn-success btn-sm skill-btn">Add</button>
-                          @endif
+@if (in_array($s->Skill_ID, $userSkills))
+  @if (($userSkillStatuses[$s->Skill_ID] ?? '') === 'pending')
+    <button type="button" class="btn btn-secondary btn-sm" disabled style="opacity:0.6;">Pending</button>
+  @elseif (($userSkillStatuses[$s->Skill_ID] ?? '') === 'verified')
+    <button type="button" class="btn btn-secondary btn-sm btn-added" disabled>Verified</button>
+  @else
+    <button type="button" class="btn btn-secondary btn-sm btn-added" disabled>Added</button>
+  @endif
+@else
+  <button type="button" onclick="openProficiencyModal({{ $s->Skill_ID }}, '{{ addslashes($s->Skill_Title) }}', this)" class="btn btn-success btn-sm skill-btn">Add</button>
+@endif
                         </div>
                       @endforeach
                     </div>

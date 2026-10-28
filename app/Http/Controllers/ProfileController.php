@@ -163,9 +163,9 @@ class ProfileController extends Controller
         if (Auth::id() !== $userId && Auth::user()->Role !== 'Admin') {
             abort(403);
         }
-        UserSkill::firstOrCreate(['User_ID' => $userId, 'Skill_ID' => $request->skill_id]);
+UserSkill::firstOrCreate(['User_ID' => $userId, 'Skill_ID' => $request->skill_id], ['Status' => 'pending']);
 
-        return back();
+return back()->with('success', 'Skill added as pending. It will be verified by an admin.');
     }
 
     public function removeSkill(Request $request)

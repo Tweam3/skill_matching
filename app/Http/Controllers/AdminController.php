@@ -33,9 +33,10 @@ class AdminController extends Controller
 
     public function index()
     {
-        $users = User::all();
-        $pendingUsers = User::where('Is_Verified', false)->get();
-        $skills = Skill::orderBy('Category')->orderBy('Skill_Title')->get();
+$users = User::all();
+$pendingUsers = User::where('Is_Verified', false)->get();
+$pendingSkills = UserSkill::with(['user', 'skill'])->where('Status', 'pending')->get();
+$skills = Skill::orderBy('Category')->orderBy('Skill_Title')->get();
         $logs = AdminActionLog::latest('Created_At')->take(50)->get();
         $reports = Report::select('reports.*', 'u1.Full_Name as Reporter', 'u2.Full_Name as Reported', 'req.Title as Request_Title', 'u2.Warning_Count', 'u2.Account_Status')
             ->join('users as u1', 'u1.User_ID', '=', 'reports.Reporter_ID')
@@ -44,7 +45,7 @@ class AdminController extends Controller
             ->latest('reports.Created_At')
             ->get();
 
-        return view('admin.index', compact('users', 'pendingUsers', 'skills', 'logs', 'reports'));
+        return view('admin.index', compact('users', 'pendingUsers', 'pendingSkills', 'skills', 'logs', 'reports'));
     }
 
     public function addSkill(Request $request)
@@ -64,7 +65,26 @@ class AdminController extends Controller
         return back();
     }
 
-    public function showCreateUserForm()
+    public function verifySkill(Request $request)
+{
+    $request->validate([
+        'user_id' => ['required', 'integer', 'exists:users,User_ID'],
+        'skill_id' => ['required', 'integer', 'exists:skills,Skill_ID'],
+        'decision' => ['required', 'in:approve,reject'],
+    ]);
+    $us = UserSkill::where('User_ID', $request->user_id)
+        ->where('Skill_ID', $request->skill_id)
+        ->firstOrFail();
+    if ($request->decision === 'approve') {
+        $us->update(['Status' => 'verified']);
+        $this->logAction('verify_skill', "Approved skill ID {$request->skill_id} for user ID {$request->user_id}");
+    } else {
+        $us->delete();
+        $this->logAction('reject_skill', "Rejected skill ID {$request->skill_id} for user ID {$request->user_id}");
+    }
+
+    return back()->with('success', 'Skill verification updated.');
+}
     {
         return view('admin.users.create');
     }

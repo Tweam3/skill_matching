@@ -45,7 +45,7 @@ class MatchController extends Controller
 
         $recommender = app(Recommender::class);
 
-        $me = User::with('skills')->findOrFail($uid);
+        $me = User::with('verifiedSkills')->findOrFail($uid);
         $ranking = $request->Status === 'Open'
             ? $recommender->rankForRequest($request)
             : [];

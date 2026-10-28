@@ -20,11 +20,14 @@ class SkillController extends Controller
             });
         });
 
-        $userSkills = Auth::id()
-            ? Auth::user()->skills->pluck('Skill_ID')->toArray()
-            : [];
+$userSkills = Auth::id()
+    ? Auth::user()->skills->pluck('Skill_ID')->toArray()
+    : [];
+$userSkillStatuses = Auth::id()
+    ? Auth::user()->userSkills->pluck('Status', 'Skill_ID')->toArray()
+    : [];
 
-        return view('skills.index', compact('skills', 'groupedSkills', 'userSkills'));
+        return view('skills.index', compact('skills', 'groupedSkills', 'userSkills', 'userSkillStatuses'));
     }
 
     public function store(Request $request)
@@ -55,12 +58,13 @@ class SkillController extends Controller
             'Skill_ID' => $request->skill_id,
         ], [
             'Proficiency' => $proficiency,
+            'Status' => 'pending',
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json(['success' => true]);
         }
 
-        return back();
+        return back()->with('success', 'Skill added as pending. It will be verified by an admin.');
     }
 }

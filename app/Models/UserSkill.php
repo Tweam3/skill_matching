@@ -13,15 +13,15 @@ class UserSkill extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['User_ID', 'Skill_ID', 'Proficiency'];
+protected $fillable = ['User_ID', 'Skill_ID', 'Proficiency', 'Status'];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'User_ID', 'User_ID');
-    }
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'User_ID', 'User_ID');
+}
 
-    public function skill(): BelongsTo
-    {
-        return $this->belongsTo(Skill::class, 'Skill_ID', 'Skill_ID');
-    }
+public function skill(): BelongsTo
+{
+    return $this->belongsTo(Skill::class, 'Skill_ID', 'Skill_ID');
+}
 }

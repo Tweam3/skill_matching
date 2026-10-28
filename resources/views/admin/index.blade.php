@@ -10,8 +10,9 @@
   </div>
 
   <div class="tabs mobile-tabs-wrapper">
-    <button class="tab active" data-tab="tab-pending" onclick="switchTab(event, 'tab-pending')">Pending Accounts</button>
-    <button class="tab" data-tab="tab-users" onclick="switchTab(event, 'tab-users')">All Users</button>
+<button class="tab" data-tab="tab-pending" onclick="switchTab(event, 'tab-pending')">Pending Accounts</button>
+<button class="tab" data-tab="tab-pending-skills" onclick="switchTab(event, 'tab-pending-skills')">Pending Skills</button>
+<button class="tab" data-tab="tab-users" onclick="switchTab(event, 'tab-users')">All Users</button>
     <button class="tab" data-tab="tab-reports" onclick="switchTab(event, 'tab-reports')">Reports</button>
     <button class="tab" data-tab="tab-skills" onclick="switchTab(event, 'tab-skills')">Skills</button>
     <button class="tab" data-tab="tab-logs" onclick="switchTab(event, 'tab-logs')">Logs</button>

@@ -69,10 +69,17 @@ class User extends Authenticatable
         return $this->Password_Hash;
     }
 
-    public function skills()
-    {
-        return $this->belongsToMany(Skill::class, 'user_skills', 'User_ID', 'Skill_ID')->withPivot('Proficiency');
-    }
+public function skills()
+{
+    return $this->belongsToMany(Skill::class, 'user_skills', 'User_ID', 'Skill_ID')->withPivot('Proficiency', 'Status');
+}
+
+public function verifiedSkills()
+{
+    return $this->belongsToMany(Skill::class, 'user_skills', 'User_ID', 'Skill_ID')
+        ->withPivot('Proficiency', 'Status')
+        ->wherePivot('Status', 'verified');
+}
 
     public function requests()
     {

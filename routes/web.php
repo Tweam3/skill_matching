@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified.user', 'user.active'])->group(function () {
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
         Route::get('/analytics/report', [AnalyticsController::class, 'report'])->name('admin.analytics.report')->middleware('throttle:5,1');
         Route::post('/admin/skills', [AdminController::class, 'addSkill'])->name('admin.skills');
+Route::post('/admin/skills/verify', [AdminController::class, 'verifySkill'])->name('admin.skills.verify');
         Route::get('/admin/users/create', [AdminController::class, 'showCreateUserForm'])->name('admin.users.create');
         Route::post('/admin/users/register', [AdminController::class, 'registerUser'])->name('admin.users.register');
         Route::post('/admin/users/verify', [AdminController::class, 'verifyUser'])->name('admin.users.verify');

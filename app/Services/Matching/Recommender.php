@@ -66,9 +66,9 @@ class Recommender
     public function score(SkillRequest $request, User $provider): array
     {
         $requested = $this->extractRequestSkills($request);
-        $providerSkillIds = $provider->skills->pluck('Skill_ID')->all();
-        $providerCategories = $provider->skills->pluck('Category')->filter()->unique()->values()->all();
-        $providerProficiencyMap = $provider->skills->pluck('pivot.Proficiency', 'Skill_ID')->all();
+$providerSkillIds = $provider->verifiedSkills->pluck('Skill_ID')->all();
+$providerCategories = $provider->verifiedSkills->pluck('Category')->filter()->unique()->values()->all();
+$providerProficiencyMap = $provider->verifiedSkills->pluck('pivot.Proficiency', 'Skill_ID')->all();
 
         $skillOverlap = $this->skillOverlapScore($requested['skill_ids'], $providerSkillIds);
         $categoryCoverage = $this->categoryCoverageScore($requested['categories'], $providerCategories);
