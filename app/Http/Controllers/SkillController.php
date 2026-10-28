@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Skill;
+use App\Models\SkillEndorsement;
+use App\Models\UserSkill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,25 +48,46 @@ $userSkillStatuses = Auth::id()
         return back()->with('success', 'Skill added.');
     }
 
-    public function addToMe(Request $request)
-    {
-        $request->validate([
-            'skill_id' => ['required', 'integer', 'exists:skills,Skill_ID'],
-            'proficiency' => ['nullable', 'integer', 'min:1', 'max:5'],
-        ]);
-        $proficiency = $request->input('proficiency', 3);
-        \App\Models\UserSkill::firstOrCreate([
-            'User_ID' => Auth::id(),
-            'Skill_ID' => $request->skill_id,
-        ], [
-            'Proficiency' => $proficiency,
-            'Status' => 'pending',
-        ]);
+public function endorse(Request $request)
+{
+    $request->validate([
+        'user_skill_id' => ['required', 'integer', 'exists:user_skills,User_Skill_ID'],
+    ]);
 
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json(['success' => true]);
-        }
+    $userSkill = UserSkill::findOrFail($request->user_skill_id);
 
-        return back()->with('success', 'Skill added as pending. It will be verified by an admin.');
+    // Can't endorse your own skill
+    if ($userSkill->User_ID === Auth::id()) {
+        return back()->with('error', 'You cannot endorse your own skill.');
     }
+
+    // Endorser must have the same skill verified
+    $endorserHasSkill = Auth::user()->verifiedSkills()
+        ->where('skills.Skill_ID', $userSkill->Skill_ID)
+        ->exists();
+
+    if (! $endorserHasSkill) {
+        return back()->with('error', 'You must have this skill verified to endorse others.');
+    }
+
+    // Create endorsement (unique per endorser + user_skill)
+    $endorsement = SkillEndorsement::firstOrCreate([
+        'Endorser_ID' => Auth::id(),
+        'User_Skill_ID' => $request->user_skill_id,
+    ]);
+
+    // Auto-verify after 2 endorsements
+    if ($endorsement->wasRecentlyCreated) {
+        $count = $userSkill->endorsements()->count();
+        if ($count >= 2) {
+            $userSkill->update(['Status' => 'verified']);
+        }
+    }
+
+    if ($request->wantsJson() || $request->ajax()) {
+        return response()->json(['success' => true, 'endorsed' => $endorsement->wasRecentlyCreated]);
+    }
+
+    return back()->with('success', 'Skill endorsed successfully.');
+}
 }

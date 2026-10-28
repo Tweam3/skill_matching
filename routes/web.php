@@ -91,6 +91,7 @@ Route::middleware(['auth', 'verified.user', 'user.active'])->group(function () {
     Route::get('/skills', [SkillController::class, 'index'])->name('skills.index');
     Route::post('/skills', [SkillController::class, 'store'])->name('skills.store');
     Route::post('/skills/add-to-me', [SkillController::class, 'addToMe'])->name('skills.addToMe');
+Route::post('/skills/endorse', [SkillController::class, 'endorse'])->name('skills.endorse');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::middleware('admin')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');

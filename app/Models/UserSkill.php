@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserSkill extends Model
 {
@@ -13,15 +14,29 @@ class UserSkill extends Model
 
     public $timestamps = false;
 
-protected $fillable = ['User_ID', 'Skill_ID', 'Proficiency', 'Status'];
+    protected $fillable = ['User_ID', 'Skill_ID', 'Proficiency', 'Status'];
 
-public function user(): BelongsTo
-{
-    return $this->belongsTo(User::class, 'User_ID', 'User_ID');
-}
+    protected $casts = [
+        'Proficiency' => 'integer',
+    ];
 
-public function skill(): BelongsTo
-{
-    return $this->belongsTo(Skill::class, 'Skill_ID', 'Skill_ID');
-}
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'User_ID', 'User_ID');
+    }
+
+    public function skill(): BelongsTo
+    {
+        return $this->belongsTo(Skill::class, 'Skill_ID', 'Skill_ID');
+    }
+
+    public function endorsements(): HasMany
+    {
+        return $this->hasMany(SkillEndorsement::class, 'User_Skill_ID', 'User_Skill_ID');
+    }
+
+    public function endorsementCount(): int
+    {
+        return $this->endorsements()->count();
+    }
 }
