@@ -43,7 +43,29 @@
     @endif
   </div>
 
-   <div id="tab-users" class="tab-panel">
+<div id="tab-pending-skills" class="tab-panel">
+  <h3>Pending Skill Verifications</h3>
+  @if ($pendingSkills->isEmpty())
+    <div class="alert alert-success">No pending skills.</div>
+  @else
+    <div class="cards-grid">
+      @foreach ($pendingSkills as $us)
+        <div class="card">
+          <div class="card-title">{{ $us->skill->Skill_Title ?? 'Unknown Skill' }}</div>
+          <div class="card-subtitle">{{ $us->user->Full_Name ?? 'Unknown User' }} ({{ $us->user->Email ?? '' }})</div>
+          <div style="margin:8px 0;">Proficiency: {{ $us->Proficiency ?? 3 }}/5</div>
+          <form method="post" action="{{ route('admin.skills.verify') }}" style="display:flex;gap:8px;margin-top:12px;">
+            @csrf
+            <input type="hidden" name="user_id" value="{{ $us->User_ID }}">
+            <input type="hidden" name="skill_id" value="{{ $us->Skill_ID }}">
+            <button type="submit" name="decision" value="approve" class="btn btn-success btn-sm">Approve</button>
+            <button type="submit" name="decision" value="reject" class="btn btn-danger btn-sm">Reject</button>
+          </form>
+        </div>
+      @endforeach
+    </div>
+  @endif
+</div
      <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm" style="margin-bottom:16px;">Add Student Manually</a>
      <div class="table-wrap"><table>
        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Council</th><th>Rating</th><th>Completed</th><th>Status</th><th>Verified</th><th>Actions</th></tr></thead>
