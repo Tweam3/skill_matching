@@ -48,7 +48,39 @@ $userSkillStatuses = Auth::id()
         return back()->with('success', 'Skill added.');
     }
 
-public function endorse(Request $request)
+public function addToMe(Request $request)
+{
+    $request->validate([
+        'skill_id' => ['required', 'integer', 'exists:skills,Skill_ID'],
+        'proficiency' => ['nullable', 'integer', 'min:1', 'max:5'],
+    ]);
+    $proficiency = $request->input('proficiency', 3);
+
+    // Auto-verify if no one has this skill verified yet (bootstrap for new skills)
+    $verifiedCount = UserSkill::where('Skill_ID', $request->skill_id)
+        ->where('Status', 'verified')
+        ->count();
+
+    $status = $verifiedCount === 0 ? 'verified' : 'pending';
+
+    \App\Models\UserSkill::firstOrCreate([
+        'User_ID' => Auth::id(),
+        'Skill_ID' => $request->skill_id,
+    ], [
+        'Proficiency' => $proficiency,
+        'Status' => $status,
+    ]);
+
+    if ($request->wantsJson() || $request->ajax()) {
+        return response()->json(['success' => true]);
+    }
+
+    $message = $status === 'verified'
+        ? 'Skill added and auto-verified (first user).'
+        : 'Skill added as pending. Get 2 endorsements from verified users to verify.';
+
+    return back()->with('success', $message);
+}
 {
     $request->validate([
         'user_skill_id' => ['required', 'integer', 'exists:user_skills,User_Skill_ID'],
