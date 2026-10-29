@@ -35,8 +35,9 @@ class DatabaseSeeder extends Seeder
             ['Skill_Title' => 'SEO', 'Category' => 'Marketing', 'Subcategory' => null],
             ['Skill_Title' => 'Content Writing', 'Category' => 'Writing', 'Subcategory' => null],
         ]);
-        $this->call([
-            SkillSeeder::class,
-        ]);
+$this->call([
+    SkillSeeder::class,
+    CouncilSkillSeeder::class,
+]);
     }
 }

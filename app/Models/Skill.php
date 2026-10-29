@@ -14,7 +14,7 @@ class Skill extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['Skill_Title', 'Category', 'Subcategory'];
+    protected $fillable = ['Skill_Title', 'Category', 'Subcategory', 'Council'];
 
     public function users(): BelongsToMany
     {
