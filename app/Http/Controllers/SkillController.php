@@ -12,15 +12,24 @@ class SkillController extends Controller
 {
     public function index()
     {
-        $skills = Skill::orderBy('Category')->orderBy('Subcategory')->orderBy('Skill_Title')->get();
+$skills = Skill::orderBy('Category')->orderBy('Subcategory')->orderBy('Skill_Title')->get();
 
-        $groupedSkills = $skills->groupBy(function ($s) {
-            return $s->Category ?: 'General';
-        })->map(function ($categorySkills) {
-            return $categorySkills->groupBy(function ($s) {
-                return $s->Subcategory ?: null;
-            });
-        });
+$userCouncil = Auth::user()->Council ?? null;
+
+// Sort: user's council first, then others
+if ($userCouncil) {
+    $skills = $skills->sortBy(function ($skill) use ($userCouncil) {
+        return $skill->Council === $userCouncil ? 0 : 1;
+    })->values();
+}
+
+$groupedSkills = $skills->groupBy(function ($s) {
+    return $s->Category ?: 'General';
+})->map(function ($categorySkills) {
+    return $categorySkills->groupBy(function ($s) {
+        return $s->Subcategory ?: null;
+    });
+});
 
 $user = Auth::user();
 $showIntro = false;
