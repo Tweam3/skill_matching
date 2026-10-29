@@ -82,12 +82,13 @@ $skills = Skill::orderBy('Category')->orderBy('Skill_Title')->get();
         $us->delete();
         $this->logAction('reject_skill', "Rejected skill ID {$request->skill_id} for user ID {$request->user_id}");
     }
-
     return back()->with('success', 'Skill verification updated.');
 }
-    {
-        return view('admin.users.create');
-    }
+
+public function showCreateUserForm()
+{
+    return view('admin.users.create');
+}
 
     public function registerUser(Request $request)
     {
