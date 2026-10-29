@@ -78,12 +78,12 @@ public function addToMe(Request $request)
     $message = $status === 'verified'
         ? 'Skill added and auto-verified (first user).'
         : 'Skill added as pending. Get 2 endorsements from verified users to verify.';
-
-    return back()->with('success', $message);
+return back()->with('success', $message);
 }
+
+public function endorse(Request $request)
 {
     $request->validate([
-        'user_skill_id' => ['required', 'integer', 'exists:user_skills,User_Skill_ID'],
     ]);
 
     $userSkill = UserSkill::findOrFail($request->user_skill_id);
