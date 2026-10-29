@@ -45,6 +45,8 @@
       <p style="margin:12px 0 0; color:var(--muted); font-size:0.9rem;">Verified skills are used for matching with skill requests.</p>
     </div>
   @endif
+
+  @if ($groupedSkills->isEmpty())
     <div class="alert alert-info">No skills available yet.</div>
   @else
     <div class="category-grid">
