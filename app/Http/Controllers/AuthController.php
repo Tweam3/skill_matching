@@ -130,7 +130,7 @@ class AuthController extends Controller
         Auth::login($user);
 
         if ($verified) {
-            return redirect()->route('dashboard');
+            return redirect()->route('skills.index')->with('first_visit', true);
         }
 
         return redirect()->route('pending.verification');

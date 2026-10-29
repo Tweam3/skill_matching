@@ -33,7 +33,18 @@
     </div>
   </div>
 
-  @if ($groupedSkills->isEmpty())
+  @if ($showIntro ?? false)
+    <div class="card" style="margin-bottom:20px; padding:20px; background:#EFF6FF; border:1px solid #BFDBFE;">
+      <h3 style="margin:0 0 8px; color:#1E40AF;">Welcome! Here's how to add skills:</h3>
+      <ol style="margin:0; padding-left:20px; color:var(--muted); line-height:1.8;">
+        <li><strong>Browse categories</strong> below to find skills you know.</li>
+        <li><strong>Click "Add"</strong> on any skill to rate your proficiency (1-5 stars).</li>
+        <li><strong>Skills start as "Pending"</strong> — they become "Verified" after 2 endorsements from peers who already have that skill.</li>
+        <li><strong>New skills</strong> are auto-verified for the first user.</li>
+      </ol>
+      <p style="margin:12px 0 0; color:var(--muted); font-size:0.9rem;">Verified skills are used for matching with skill requests.</p>
+    </div>
+  @endif
     <div class="alert alert-info">No skills available yet.</div>
   @else
     <div class="category-grid">

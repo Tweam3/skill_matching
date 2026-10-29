@@ -22,14 +22,27 @@ class SkillController extends Controller
             });
         });
 
+$user = Auth::user();
+$showIntro = false;
+
+if ($user) {
+    $settings = $user->settings ?? [];
+    if (empty($settings['skills_intro_seen'])) {
+        $showIntro = true;
+        $settings['skills_intro_seen'] = true;
+        $user->settings = $settings;
+        $user->save();
+    }
+}
+
 $userSkills = Auth::id()
-    ? Auth::user()->skills->pluck('Skill_ID')->toArray()
+    ? $user->skills->pluck('Skill_ID')->toArray()
     : [];
 $userSkillStatuses = Auth::id()
-    ? Auth::user()->userSkills->pluck('Status', 'Skill_ID')->toArray()
+    ? $user->userSkills->pluck('Status', 'Skill_ID')->toArray()
     : [];
 
-        return view('skills.index', compact('skills', 'groupedSkills', 'userSkills', 'userSkillStatuses'));
+return view('skills.index', compact('skills', 'groupedSkills', 'userSkills', 'userSkillStatuses', 'showIntro'));
     }
 
     public function store(Request $request)
