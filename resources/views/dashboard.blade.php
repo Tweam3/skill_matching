@@ -47,14 +47,27 @@
       @endforeach
     </div>
   @endif
-  <div class="page-header" style="margin-top:28px;">
+<div class="page-header" style="margin-top:28px;">
     <h3>Quick Links</h3>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    <a href="{{ route('matches.index') }}" class="btn btn-primary">Browse Matches</a>
+    <a href="{{ route('requests.index') }}" class="btn btn-primary">+ New Request</a>
+    <a href="{{ route('skills.index') }}" class="btn btn-success">+ Add Skill</a>
+    <a href="{{ route('matches.index') }}" class="btn btn-secondary">Browse Matches</a>
     <a href="{{ route('messages.index') }}" class="btn btn-secondary">Messages</a>
     <a href="{{ route('reviews.index') }}" class="btn btn-secondary">Reviews</a>
     <a href="{{ route('profile.show', auth()->id()) }}" class="btn btn-secondary">My Profile</a>
+  </div>
+  <div class="card" style="margin-top:24px; padding:16px; background:#F0FDF4; border:1px solid #BBF7D0;">
+    <h4 style="margin:0 0 8px; color:#065F46;">Quick Overview</h4>
+    <ul style="margin:0; padding-left:20px; color:var(--muted); line-height:1.8;">
+      <li><strong>+ New Request</strong> — Post a skill request and get matched with peers who can help.</li>
+      <li><strong>+ Add Skill</strong> — Add skills you know to your profile so others can find you.</li>
+      <li><strong>Browse Matches</strong> — View and accept skill requests that match your skills.</li>
+      <li><strong>Messages</strong> — Chat with matched users.</li>
+      <li><strong>Reviews</strong> — Leave or view reviews from completed sessions.</li>
+      <li><strong>My Profile</strong> — Update your info, bio, and profile picture.</li>
+    </ul>
   </div>
 </div>
 @endsection
